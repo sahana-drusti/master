@@ -1,5 +1,8 @@
+import 'package:drusti/PasswordReset.dart';
+import 'package:passwordfield/passwordfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 
 class LoginAndRegisteration extends StatelessWidget{
   LoginAndRegisteration(){
@@ -19,12 +22,20 @@ class LoginAndRegisterationPage  extends StatefulWidget{
 }
 
 class LoginAndRegisterationPageState extends State{
+  int _value = 1;
   bool login = true;
   bool signup = false;
   List<bool> isSelect = [true,false];
   final _formKey = GlobalKey<FormState>();
+  List state=["karnataka","goa","mp"];
+  var stateValue="karnataka";
+  List district=["hassan","banglore"];
+  var districtValue="hassan";
+  List thalluk=["alur","belur"];
+  var thallukValue="alur";
   @override
   Widget build(BuildContext context) {
+
     if(login){
       return Scaffold(
           appBar: AppBar(
@@ -33,7 +44,9 @@ class LoginAndRegisterationPageState extends State{
           body:Column(
             children: [
               ToggleButtons(
+
                 constraints: BoxConstraints.expand(
+
                   width: 200.0,
                   height: 50.0,
                 ),
@@ -69,46 +82,73 @@ class LoginAndRegisterationPageState extends State{
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       TextFormField(
+                        decoration: new InputDecoration(
+                       focusedBorder: OutlineInputBorder(
+                       borderSide: BorderSide(color: Colors.black, width: 2.0),
+                       ),
+                        enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black, width: 2.0),
+                      ),
+                          hintText:'username'
+                      ),
                         validator: (val){
                           if(val == null || val.isEmpty){
                             return 'Please enter UserName';
                           }
                         },
-                        decoration: InputDecoration(
-                          hintText: 'UserName'
-                        ),
+
                       ),
-                      TextFormField(
-                        validator: (val){
-                          if(val == null || val.isEmpty){
-                            return 'Please enter Password';
-                          }
+                      PasswordField(
+                        hasFloatingPlaceholder: true,
+                        pattern: r'.*[@$#.*].*',
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(2),
+                            borderSide: BorderSide(width: 2, )),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(width: 2,)),
+                        errorMessage: 'must contain special character either . * @ # \$',
+                      ),
+                      TextButton(
+                        child: Text('forgot password'),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => PasswordReset()),
+                          );
                         },
-                        decoration: InputDecoration(
-                            hintText: 'Password'
-                        ),
 
                       ),
                       ElevatedButton(
-                          onPressed: (){
+                        onPressed: () {
+                          // Validate returns true if the form is valid, or false otherwise.
+                          if (_formKey.currentState!.validate()) {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(SnackBar(content: Text('Processing Data')));
+                          }
+                        },
+                        child:
+                        Text('Submit'),
 
-                            },
-                          child: Text('Submit'),
-                      )
+
+                      ),
+
                     ],
                   ))
-              
+
             ],
           )
 
       );
     }else{
       return Scaffold(
-          appBar: AppBar(
-            title: Text('Login Page'),
-          ),
-          body:Column(
-            children: [
+        appBar: AppBar(
+          title: Text('Login Page'),
+        ),
+        resizeToAvoidBottomInset: false,
+        body: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
               ToggleButtons(
                 constraints: BoxConstraints.expand(
                   width: 200.0,
@@ -142,107 +182,206 @@ class LoginAndRegisterationPageState extends State{
               ),
               Form(
                   key:_formKey,
-                  child: Wrap(
-                    //mainAxisAlignment: MainAxisAlignment.center,
-                    
+                  child: Column(
+
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       TextFormField(
+                        decoration: new InputDecoration(
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black, width: 2.0),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black, width: 2.0),
+                            ),
+                            hintText:'enter name'
+                        ),
                         validator: (val){
                           if(val == null || val.isEmpty){
                             return 'Please enter UserName';
                           }
                         },
-                        decoration: InputDecoration(
-                            hintText: 'Enter School Name'
-                        ),
-                      ),
-                      TextFormField(
-                        validator: (val){
-                          if(val == null || val.isEmpty){
-                            return 'Please enter Password';
-                          }
-                        },
-                        decoration: InputDecoration(
-                            hintText: 'Enter Reg Number'
-                        ),
 
                       ),
                       TextFormField(
+                        decoration: new InputDecoration(
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black, width: 2.0),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black, width: 2.0),
+                            ),
+                            hintText:'registration number'
+                        ),
                         validator: (val){
                           if(val == null || val.isEmpty){
-                            return 'Please enter Password';
+                            return 'Please enter registration number';
                           }
                         },
-                        decoration: InputDecoration(
-                            hintText: 'Enter Reg Number'
-                        ),
 
                       ),
                       TextFormField(
+
+                          decoration:new InputDecoration(
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black, width: 2.0),
+                            ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black, width: 2.0),
+                              ),
+                              labelText: 'E-Mail'),
+                          keyboardType: TextInputType.emailAddress,
+                          onFieldSubmitted: (value) {
+                            //Validator
+                          },
+
+                        ),
+
+                      DropdownButtonFormField(
+                        decoration:new InputDecoration(
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black, width: 2.0),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black, width: 2.0),
+                          ),
+                        ),
+                        items:
+                      state.map<DropdownMenuItem<String>>((e) { return(
+                          DropdownMenuItem( child: Text(e.toString()),value: e,));
+                      }
+                      ).toList(),
+                        value: stateValue,
+                        onChanged: (value){
+                          setState(() {
+                            stateValue = value.toString();
+                          });
+                        },
+
+                      ),
+
+
+                      DropdownButtonFormField(
+                        decoration:new InputDecoration(
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black, width: 2.0),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black, width: 2.0),
+                          ),
+                        ),
+                        items:
+                      district.map<DropdownMenuItem<String>>((e) { return(
+                          DropdownMenuItem( child: Text(e.toString()),value: e,));
+                      }
+                      ).toList(),
+                        value: districtValue,
+                        onChanged: (value){
+                          setState(() {
+                            districtValue = value.toString();
+                          });
+                        },
+
+                      ),
+
+
+                      DropdownButtonFormField(
+                        decoration:new InputDecoration(
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black, width: 2.0),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black, width: 2.0),
+                          ),
+                        ),
+                        items:
+                      thalluk.map<DropdownMenuItem<String>>((e) { return(
+                          DropdownMenuItem( child: Text(e.toString()),value: e,));
+                      }
+                      ).toList(),
+                        value: thallukValue,
+                        onChanged: (value){
+                          setState(() {
+                            thallukValue = value.toString();
+                          });
+                        },
+                      ),
+                      TextFormField(
+                        decoration: new InputDecoration(
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black, width: 2.0),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black, width: 2.0),
+                            ),
+                            hintText:'pincode'
+                        ),
                         validator: (val){
                           if(val == null || val.isEmpty){
-                            return 'Please enter Password';
+                            return 'Please enter pincode';
                           }
                         },
-                        decoration: InputDecoration(
-                            hintText: 'Enter Reg Number'
-                        ),
 
                       ),
                       TextFormField(
+                        decoration: new InputDecoration(
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black, width: 2.0),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black, width: 2.0),
+                            ),
+                            hintText:'Addressline'
+                        ),
                         validator: (val){
                           if(val == null || val.isEmpty){
-                            return 'Please enter Password';
+                            return 'Please enter Addressline';
                           }
                         },
-                        decoration: InputDecoration(
-                            hintText: 'Enter Reg Number'
-                        ),
 
                       ),
-                      TextFormField(
-                        validator: (val){
-                          if(val == null || val.isEmpty){
-                            return 'Please enter Password';
-                          }
-                        },
-                        decoration: InputDecoration(
-                            hintText: 'Enter Reg Number'
-                        ),
-
+                      PasswordField(
+                        hasFloatingPlaceholder: true,
+                        pattern: r'.*[@$#.*].*',
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(2),
+                            borderSide: BorderSide(width: 2, )),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(width: 2, )),
+                        errorMessage: 'must contain special character either . * @ # \$',
                       ),
-                      TextFormField(
-                        validator: (val){
-                          if(val == null || val.isEmpty){
-                            return 'Please enter Password';
-                          }
-                        },
-                        decoration: InputDecoration(
-                            hintText: 'Enter Reg Number'
-                        ),
-
+                      PasswordField(
+                        hasFloatingPlaceholder: true,
+                        hintText: ('Confirm Password'),
+                        pattern: r'.*[@$#.*].*',
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(2),
+                            borderSide: BorderSide(width: 2, )),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(width: 2, )),
+                        errorMessage: 'must contain special character either . * @ # \$',
                       ),
-                      TextFormField(
-                        validator: (val){
-                          if(val == null || val.isEmpty){
-                            return 'Please enter Password';
-                          }
-                        },
-                        decoration: InputDecoration(
-                            hintText: 'Enter Reg Number'
-                        ),
 
-                      ),
-                      ElevatedButton(
-                        onPressed: (){
+                        ElevatedButton(
+                         onPressed: () {
 
-                        },
-                        child: Text('Submit'),
-                      )
+                                if (_formKey.currentState!.validate()) {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(content: Text('Processing Data')));
+                                }
+                                },
+                          child:
+                            Text('Submit'),
+
+
+                            ),
                     ],
                   ))
             ],
-          )
+          ),
+        ),
 
       );
     }
