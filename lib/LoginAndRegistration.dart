@@ -1,11 +1,17 @@
+import 'dart:convert';
+
+import 'package:drusti/HomePage.dart';
 import 'package:drusti/PasswordReset.dart';
 import 'package:passwordfield/passwordfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:http/http.dart' as http;
 
 class LoginAndRegisteration extends StatelessWidget {
-  LoginAndRegisteration() {}
+  final String type;
+  LoginAndRegisteration({required this.type});
+
   @override
   Widget build(BuildContext context) {
     return LoginAndRegisterationPage();
@@ -30,6 +36,10 @@ class LoginAndRegisterationPageState extends State {
   List taluk = ["alur", "belur"];
   var talukValue = "alur";
   bool validEmail = true;
+  final rNameController = TextEditingController();
+  final rEmailController = TextEditingController();
+  final rPasswordController = TextEditingController();
+  final rRegNoController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     if (login) {
@@ -134,7 +144,7 @@ class LoginAndRegisterationPageState extends State {
                                     SnackBar(content: Text('Processing Data')));
                               }
                             },
-                            child: Text('Submit'),
+                            child: Text('SignIn'),
                           ),
                         ],
                       ))),
@@ -143,7 +153,7 @@ class LoginAndRegisterationPageState extends State {
     } else {
       return Scaffold(
         appBar: AppBar(
-          title: Text('Login Page'),
+          title: Text('Registration Page'),
         ),
         resizeToAvoidBottomInset: false,
         body: SingleChildScrollView(
@@ -181,7 +191,7 @@ class LoginAndRegisterationPageState extends State {
               ),
               Container(
                   margin: EdgeInsetsDirectional.only(
-                      top: 6.0, start: 10.0, end: 10.0),
+                      top: 50.0, start: 10.0, end: 10.0),
                   child: Form(
                       key: _formKey,
                       child: Column(
@@ -190,6 +200,7 @@ class LoginAndRegisterationPageState extends State {
                           Padding(
                               padding: EdgeInsets.only(top: 6.0, bottom: 6.0),
                               child: TextFormField(
+                                controller: rNameController,
                                 decoration: new InputDecoration(
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
@@ -211,6 +222,7 @@ class LoginAndRegisterationPageState extends State {
                           Padding(
                               padding: EdgeInsets.only(top: 6.0, bottom: 6.0),
                               child: TextFormField(
+                                controller: rRegNoController,
                                 decoration: new InputDecoration(
                                     focusedBorder: OutlineInputBorder(
                                       borderSide: BorderSide(
@@ -231,6 +243,7 @@ class LoginAndRegisterationPageState extends State {
                           Padding(
                               padding: EdgeInsets.only(top: 6.0, bottom: 0.0),
                               child: TextFormField(
+                                controller: rEmailController,
                                 decoration: new InputDecoration(
                                     focusedBorder: OutlineInputBorder(
                                       borderSide: BorderSide(
@@ -242,12 +255,18 @@ class LoginAndRegisterationPageState extends State {
                                     ),
                                     hintText: 'E-Mail Address',
                                     labelText: "E-mail."),
+                                validator: (val) {
+                                  if (val == null || val.isEmpty) {
+                                    return 'Please enter UserName';
+                                  }
+                                },
                                 onChanged: (value) => {
                                   setState(() {
                                     if (EmailValidator.validate(value)) {
                                       validEmail = true;
                                     } else {
                                       validEmail = false;
+
                                     }
                                   }),
                                 },
@@ -256,7 +275,7 @@ class LoginAndRegisterationPageState extends State {
                               padding: const EdgeInsets.only(bottom: 0.0),
                               child:
                                   Text((!validEmail) ? "Email Invalid." : "")),
-                          Padding(
+                          /*Padding(
                             padding: EdgeInsets.only( bottom: 6.0),
                             child: TextFormField(
                               decoration: new InputDecoration(
@@ -274,6 +293,7 @@ class LoginAndRegisterationPageState extends State {
                               validator: (val) {
                                 if (val == null || val.isEmpty) {
                                   return 'Please enter Address';
+
                                 }
                               },
                             ),
@@ -380,9 +400,9 @@ class LoginAndRegisterationPageState extends State {
                                     return 'Please enter pincode';
                                   }
                                 },
-                              )),
+                              )),*/
                           Padding(
-                            padding: EdgeInsets.only(top: 6.0, bottom: 6.0),
+                            padding: EdgeInsets.only( bottom: 6.0),
                             child: PasswordField(
                               hasFloatingPlaceholder: true,
                               pattern: r'.*[@$#.*].*',
@@ -403,6 +423,7 @@ class LoginAndRegisterationPageState extends State {
                           Padding(
                             padding: EdgeInsets.only(top: 6.0, bottom: 6.0),
                             child: PasswordField(
+                              controller: rPasswordController,
                               hasFloatingPlaceholder: true,
                               hintText: ('Confirm Password'),
                               pattern: r'.*[@$#.*].*',
@@ -423,9 +444,14 @@ class LoginAndRegisterationPageState extends State {
                           ElevatedButton(
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Processing Data')));
+                                final response = createUser();
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => HomePage()),
+                                );
                               }
+
                             },
                             child: Text('Submit'),
                           ),
@@ -436,5 +462,27 @@ class LoginAndRegisterationPageState extends State {
         ),
       );
     }
+  }
+
+  Future<http.Response> createUser() async {
+
+      final response = await http.post(
+        Uri.parse("http://192.168.1.9:3000/users"),
+        headers: <String,String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String,String>{
+          'name':rNameController.text,
+          'email': rEmailController.text,
+          'reg_no':rRegNoController.text,
+          'password':rPasswordController.text
+        }),
+      );
+      print(response);
+      if(response.statusCode != 200){
+        throw Exception('error while creating user');
+      }
+
+      return response;
   }
 }

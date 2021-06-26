@@ -1,3 +1,4 @@
+// @dart=2.9
 import 'package:flutter/material.dart';
 import 'package:drusti/LoginAndRegistration.dart';
 
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
 }
 
 class LandingPage extends StatefulWidget {
-  LandingPage({Key? key, required this.title}) : super(key: key);
+  LandingPage({ this.title}) : super();
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -41,7 +42,6 @@ class LandingPage extends StatefulWidget {
   // always marked "final".
 
   final String title;
-
   @override
   LandingPageState createState() => LandingPageState();
 }
@@ -118,7 +118,7 @@ class LandingPageState extends State<LandingPage> {
           Navigator.push<void>(
             context,
             MaterialPageRoute<void>(
-              builder: (BuildContext context) =>   LoginAndRegisteration(),
+              builder: (BuildContext context) =>   LoginAndRegisteration(type:'Institute',),
             ),
           );
         },
