@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:flutter_session/flutter_session.dart';
 import 'package:drusti/HomePage.dart';
 import 'package:drusti/PasswordReset.dart';
 import 'package:passwordfield/passwordfield.dart';
@@ -8,9 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:http/http.dart' as http;
 
+
 class LoginAndRegisteration extends StatelessWidget {
   final String type;
   LoginAndRegisteration({required this.type});
+
 
   @override
   Widget build(BuildContext context) {
@@ -404,6 +406,7 @@ class LoginAndRegisterationPageState extends State {
                           Padding(
                             padding: EdgeInsets.only( bottom: 6.0),
                             child: PasswordField(
+
                               hasFloatingPlaceholder: true,
                               pattern: r'.*[@$#.*].*',
                               border: OutlineInputBorder(
@@ -416,8 +419,11 @@ class LoginAndRegisterationPageState extends State {
                                   borderSide: BorderSide(
                                     width: 1,
                                   )),
+
                               errorMessage:
                                   'must contain special character either . * @ # \$',
+
+
                             ),
                           ),
                           Padding(
@@ -467,7 +473,7 @@ class LoginAndRegisterationPageState extends State {
   Future<http.Response> createUser() async {
 
       final response = await http.post(
-        Uri.parse("http://192.168.1.9:3000/users"),
+        Uri.parse("http://192.168.1.8:3000/users"),
         headers: <String,String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

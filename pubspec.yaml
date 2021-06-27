@@ -31,6 +31,7 @@ dependencies:
   email_validator: ^2.0.1
   passwordfield: ^0.0.82
   http: ^0.13.3
+  flutter_session: ^0.1.1
 
 
 dev_dependencies:
