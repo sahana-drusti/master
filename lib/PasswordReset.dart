@@ -1,7 +1,6 @@
 import 'package:drusti/PasswordReset.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:passwordfield/passwordfield.dart';
 
 class PasswordReset extends StatelessWidget {
   PasswordReset();
@@ -9,7 +8,7 @@ class PasswordReset extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("reset password"),
+        title: Text("Reset Password"),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -33,43 +32,59 @@ class PasswordReset extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(bottom: 6.0),
-            child: PasswordField(
-              hasFloatingPlaceholder: true,
-              hintText: ('Confirm Password'),
-              pattern: r'.*[@$#.*].*',
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(2),
-                  borderSide: BorderSide(
-                    width: 2,
-                  )),
-              focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    width: 2,
-                  )),
-              errorMessage: 'must contain special character either . * @ # \$',
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(bottom: 6.0),
-            child: PasswordField(
-              hasFloatingPlaceholder: true,
-              hintText: ('Confirm Password'),
-              pattern: r'.*[@$#.*].*',
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(2),
-                  borderSide: BorderSide(
-                    width: 2,
-                  )),
-              focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    width: 2,
-                  )),
-              errorMessage: 'must contain special character either . * @ # \$',
-            ),
-          ),
+                              padding: EdgeInsets.only(bottom: 6.0),
+                              child: TextFormField(
+                                controller: rPasswordController,
+                                autofocus: false,
+                                obscureText: true,
+                                decoration: new InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.black, width: 1.0),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.black, width: 1.0),
+                                  ),
+                                  hintText: 'Password',
+                                  labelText: "Password",
+                                ),
+
+                                validator: (val) {
+                                  if (val == null || val.isEmpty) {
+                                    return 'Please enter Password';
+                                  }
+                                },
+                              )),
+                          Padding(
+                              padding: EdgeInsets.only(top: 6.0,bottom: 6.0),
+                              child: TextFormField(
+                                controller: rConfirmPasswordController,
+                                autofocus: false,
+                                obscureText: true,
+                                decoration: new InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.black, width: 1.0),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.black, width: 1.0),
+                                  ),
+                                  hintText: 'Confirm Password',
+                                  labelText: "Confirm Password",
+                                ),
+
+                                validator: (val) {
+                                  if (val == null || val.isEmpty) {
+                                    return 'Please enter Password';
+                                  }
+                                  else if(rConfirmPasswordController.text.toString() != rPasswordController.text.toString()){
+                                    return 'Password didnot match';
+                                  }
+                                },
+                              )),
+
           ElevatedButton(
             onPressed: () {
               // Validate returns true if the form is valid, or false otherwise.
