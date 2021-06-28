@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter_session/flutter_session.dart';
 import 'package:drusti/HomePage.dart';
 import 'package:drusti/PasswordReset.dart';
-import 'package:passwordfield/passwordfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
@@ -41,7 +40,11 @@ class LoginAndRegisterationPageState extends State {
   final rNameController = TextEditingController();
   final rEmailController = TextEditingController();
   final rPasswordController = TextEditingController();
+  final rConfirmPasswordController = TextEditingController();
   final rRegNoController = TextEditingController();
+  final lEmailController = TextEditingController();
+  final lPasswordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     if (login) {
@@ -94,6 +97,7 @@ class LoginAndRegisterationPageState extends State {
                           Padding(
                               padding: EdgeInsets.only(bottom: 6.0),
                               child: TextFormField(
+                                controller: lEmailController,
                                 decoration: new InputDecoration(
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
@@ -105,29 +109,40 @@ class LoginAndRegisterationPageState extends State {
                                   ),
                                   hintText: 'UserName',
                                   labelText: "UserName",
+
                                 ),
+                                autofocus: false,
                                 validator: (val) {
                                   if (val == null || val.isEmpty) {
                                     return 'Please enter UserName';
                                   }
                                 },
                               )),
-                          PasswordField(
-                            hasFloatingPlaceholder: true,
-                            pattern: r'.*[@$#.*].*',
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(1),
-                                borderSide: BorderSide(
-                                  width: 1,
-                                )),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(
-                                  width: 1,
-                                )),
-                            errorMessage:
-                                'must contain special character either . * @ # \$',
-                          ),
+                          Padding(
+                              padding: EdgeInsets.only(bottom: 6.0),
+                              child: TextFormField(
+                                controller: lPasswordController,
+                                autofocus: false,
+                                obscureText: true,
+                                decoration: new InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.black, width: 1.0),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.black, width: 1.0),
+                                  ),
+                                  hintText: 'Password',
+                                  labelText: "Password",
+                                ),
+
+                                validator: (val) {
+                                  if (val == null || val.isEmpty) {
+                                    return 'Please enter Password';
+                                  }
+                                },
+                              )),
                           TextButton(
                             child: Text('Forgot password'),
                             onPressed: () {
@@ -142,8 +157,9 @@ class LoginAndRegisterationPageState extends State {
                             onPressed: () {
                               // Validate returns true if the form is valid, or false otherwise.
                               if (_formKey.currentState!.validate()) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Processing Data')));
+                                /*if(!getUserAndValidate()){
+
+                                }*/
                               }
                             },
                             child: Text('SignIn'),
@@ -403,50 +419,61 @@ class LoginAndRegisterationPageState extends State {
                                   }
                                 },
                               )),*/
+
                           Padding(
-                            padding: EdgeInsets.only( bottom: 6.0),
-                            child: PasswordField(
+                              padding: EdgeInsets.only(bottom: 6.0),
+                              child: TextFormField(
+                                controller: rPasswordController,
+                                autofocus: false,
+                                obscureText: true,
+                                decoration: new InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.black, width: 1.0),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.black, width: 1.0),
+                                  ),
+                                  hintText: 'Password',
+                                  labelText: "Password",
+                                ),
 
-                              hasFloatingPlaceholder: true,
-                              pattern: r'.*[@$#.*].*',
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(1),
-                                  borderSide: BorderSide(
-                                    width: 1,
-                                  )),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    width: 1,
-                                  )),
+                                validator: (val) {
+                                  if (val == null || val.isEmpty) {
+                                    return 'Please enter Password';
+                                  }
+                                },
+                              )),
 
-                              errorMessage:
-                                  'must contain special character either . * @ # \$',
-
-
-                            ),
-                          ),
                           Padding(
-                            padding: EdgeInsets.only(top: 6.0, bottom: 6.0),
-                            child: PasswordField(
-                              controller: rPasswordController,
-                              hasFloatingPlaceholder: true,
-                              hintText: ('Confirm Password'),
-                              pattern: r'.*[@$#.*].*',
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(1),
-                                  borderSide: BorderSide(
-                                    width: 1,
-                                  )),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    width: 1,
-                                  )),
-                              errorMessage:
-                                  'must contain special character either . * @ # \$',
-                            ),
-                          ),
+                              padding: EdgeInsets.only(top: 6.0,bottom: 6.0),
+                              child: TextFormField(
+                                controller: rConfirmPasswordController,
+                                autofocus: false,
+                                obscureText: true,
+                                decoration: new InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.black, width: 1.0),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.black, width: 1.0),
+                                  ),
+                                  hintText: 'Confirm Password',
+                                  labelText: "Confirm Password",
+                                ),
+
+                                validator: (val) {
+                                  if (val == null || val.isEmpty) {
+                                    return 'Please enter Password';
+                                  }
+                                  else if(rConfirmPasswordController.text.toString() != rPasswordController.text.toString()){
+                                    return 'Password didnot match';
+                                  }
+                                },
+                              )),
                           ElevatedButton(
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
@@ -481,7 +508,7 @@ class LoginAndRegisterationPageState extends State {
           'name':rNameController.text,
           'email': rEmailController.text,
           'reg_no':rRegNoController.text,
-          'password':rPasswordController.text
+          'password':rPasswordController.text,
         }),
       );
       print(response);
@@ -490,5 +517,11 @@ class LoginAndRegisterationPageState extends State {
       }
 
       return response;
+  }
+
+  Future<bool> getUserAndValidate() async{
+    bool isValidUser = false;
+    //final response = await http.get(Uri.parse("http://192.168.1.9:3000/users?email="))
+    return false;
   }
 }
