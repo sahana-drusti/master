@@ -7,11 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:http/http.dart' as http;
 
-
 class LoginAndRegisteration extends StatelessWidget {
   final String type;
   LoginAndRegisteration({required this.type});
-
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +35,7 @@ class LoginAndRegisterationPageState extends State {
   List taluk = ["alur", "belur"];
   var talukValue = "alur";
   bool validEmail = true;
+  bool validRegNo = true;
   final rNameController = TextEditingController();
   final rEmailController = TextEditingController();
   final rPasswordController = TextEditingController();
@@ -109,7 +108,6 @@ class LoginAndRegisterationPageState extends State {
                                   ),
                                   hintText: 'UserName',
                                   labelText: "UserName",
-
                                 ),
                                 autofocus: false,
                                 validator: (val) {
@@ -136,7 +134,6 @@ class LoginAndRegisterationPageState extends State {
                                   hintText: 'Password',
                                   labelText: "Password",
                                 ),
-
                                 validator: (val) {
                                   if (val == null || val.isEmpty) {
                                     return 'Please enter Password';
@@ -173,7 +170,7 @@ class LoginAndRegisterationPageState extends State {
         appBar: AppBar(
           title: Text('Registration Page'),
         ),
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
@@ -240,6 +237,18 @@ class LoginAndRegisterationPageState extends State {
                           Padding(
                               padding: EdgeInsets.only(top: 6.0, bottom: 6.0),
                               child: TextFormField(
+                                onChanged: (value) {
+                                  RegExp exp = RegExp(r'^[a-zA-Z0-9&%=]+$');
+                                  if (!exp.hasMatch(value)) {
+                                    setState(() {
+                                      validRegNo = false;
+                                    });
+                                  }else{
+                                    setState(() {
+                                      validRegNo = true;
+                                    });
+                                  }
+                                },
                                 controller: rRegNoController,
                                 decoration: new InputDecoration(
                                     focusedBorder: OutlineInputBorder(
@@ -255,9 +264,15 @@ class LoginAndRegisterationPageState extends State {
                                 validator: (val) {
                                   if (val == null || val.isEmpty) {
                                     return 'Please enter registration number';
+                                  } else if (!validRegNo) {
+                                    return 'Please enter valid Reg. No.';
                                   }
                                 },
                               )),
+                          Padding(
+                              padding: const EdgeInsets.only(bottom: 0.0),
+                              child:
+                              Text((!validRegNo) ? "RegNo Invalid." : "")),
                           Padding(
                               padding: EdgeInsets.only(top: 6.0, bottom: 0.0),
                               child: TextFormField(
@@ -284,7 +299,6 @@ class LoginAndRegisterationPageState extends State {
                                       validEmail = true;
                                     } else {
                                       validEmail = false;
-
                                     }
                                   }),
                                 },
@@ -292,7 +306,8 @@ class LoginAndRegisterationPageState extends State {
                           Padding(
                               padding: const EdgeInsets.only(bottom: 0.0),
                               child:
-                                  Text((!validEmail) ? "Email Invalid." : "")),
+                                  Text(
+                                      (!validEmail) ? "Email Invalid." : "")),
                           /*Padding(
                             padding: EdgeInsets.only( bottom: 6.0),
                             child: TextFormField(
@@ -438,16 +453,14 @@ class LoginAndRegisterationPageState extends State {
                                   hintText: 'Password',
                                   labelText: "Password",
                                 ),
-
                                 validator: (val) {
                                   if (val == null || val.isEmpty) {
                                     return 'Please enter Password';
                                   }
                                 },
                               )),
-
                           Padding(
-                              padding: EdgeInsets.only(top: 6.0,bottom: 6.0),
+                              padding: EdgeInsets.only(top: 6.0, bottom: 6.0),
                               child: TextFormField(
                                 controller: rConfirmPasswordController,
                                 autofocus: false,
@@ -464,12 +477,12 @@ class LoginAndRegisterationPageState extends State {
                                   hintText: 'Confirm Password',
                                   labelText: "Confirm Password",
                                 ),
-
                                 validator: (val) {
                                   if (val == null || val.isEmpty) {
                                     return 'Please enter Password';
-                                  }
-                                  else if(rConfirmPasswordController.text.toString() != rPasswordController.text.toString()){
+                                  } else if (rConfirmPasswordController.text
+                                          .toString() !=
+                                      rPasswordController.text.toString()) {
                                     return 'Password didnot match';
                                   }
                                 },
@@ -484,7 +497,6 @@ class LoginAndRegisterationPageState extends State {
                                       builder: (context) => HomePage()),
                                 );
                               }
-
                             },
                             child: Text('Submit'),
                           ),
@@ -498,28 +510,27 @@ class LoginAndRegisterationPageState extends State {
   }
 
   Future<http.Response> createUser() async {
+    final response = await http.post(
+      Uri.parse("http://192.168.1.8:3000/users"),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'name': rNameController.text,
+        'email': rEmailController.text,
+        'reg_no': rRegNoController.text,
+        'password': rPasswordController.text,
+      }),
+    );
+    print(response);
+    if (response.statusCode != 200) {
+      throw Exception('error while creating user');
+    }
 
-      final response = await http.post(
-        Uri.parse("http://192.168.1.8:3000/users"),
-        headers: <String,String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String,String>{
-          'name':rNameController.text,
-          'email': rEmailController.text,
-          'reg_no':rRegNoController.text,
-          'password':rPasswordController.text,
-        }),
-      );
-      print(response);
-      if(response.statusCode != 200){
-        throw Exception('error while creating user');
-      }
-
-      return response;
+    return response;
   }
 
-  Future<bool> getUserAndValidate() async{
+  Future<bool> getUserAndValidate() async {
     bool isValidUser = false;
     //final response = await http.get(Uri.parse("http://192.168.1.9:3000/users?email="))
     return false;
