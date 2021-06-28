@@ -1,4 +1,3 @@
-import 'package:drusti/PasswordReset.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -34,7 +33,6 @@ class PasswordReset extends StatelessWidget {
           Padding(
                               padding: EdgeInsets.only(bottom: 6.0),
                               child: TextFormField(
-                                controller: rPasswordController,
                                 autofocus: false,
                                 obscureText: true,
                                 decoration: new InputDecoration(
@@ -59,7 +57,6 @@ class PasswordReset extends StatelessWidget {
                           Padding(
                               padding: EdgeInsets.only(top: 6.0,bottom: 6.0),
                               child: TextFormField(
-                                controller: rConfirmPasswordController,
                                 autofocus: false,
                                 obscureText: true,
                                 decoration: new InputDecoration(
@@ -79,10 +76,8 @@ class PasswordReset extends StatelessWidget {
                                   if (val == null || val.isEmpty) {
                                     return 'Please enter Password';
                                   }
-                                  else if(rConfirmPasswordController.text.toString() != rPasswordController.text.toString()){
-                                    return 'Password didnot match';
-                                  }
                                 },
+                                
                               )),
 
           ElevatedButton(
