@@ -77,7 +77,7 @@ class PasswordReset extends StatelessWidget {
                                     return 'Please enter Password';
                                   }
                                 },
-                                
+
                               )),
 
           ElevatedButton(
