@@ -34,6 +34,7 @@ class LoginAndRegisterationPageState extends State {
   var districtValue = "hassan";
   List taluk = ["alur", "belur"];
   var talukValue = "alur";
+  bool validFormKeyLogin = true;
   bool validEmail = true;
   bool validRegNo = true;
   final rNameController = TextEditingController();
@@ -154,9 +155,19 @@ class LoginAndRegisterationPageState extends State {
                             onPressed: () {
                               // Validate returns true if the form is valid, or false otherwise.
                               if (_formKey.currentState!.validate()) {
-                                /*if(!getUserAndValidate()){
+                               getUserAndValidate().then((value) =>
+                               {
+                               if(value){
+                               Navigator.push(
+                                 context,
+                                 MaterialPageRoute(
+                                     builder: (context) => HomePage()),
+                               )
+                               }});
 
-                                }*/
+                                }else{
+
+
                               }
                             },
                             child: Text('SignIn'),
@@ -532,7 +543,17 @@ class LoginAndRegisterationPageState extends State {
 
   Future<bool> getUserAndValidate() async {
     bool isValidUser = false;
-    //final response = await http.get(Uri.parse("http://192.168.1.9:3000/users?email="))
-    return false;
+    if(lEmailController.text.isNotEmpty) {
+      String url = "http://192.168.1.9:3000/users?email=" +
+          lEmailController.text.toString();
+      final response = await http.get(Uri.parse(url));
+      if(response.statusCode == 200){
+        var result = json.decode(response.body);
+        if(lEmailController.text.toString().isNotEmpty || lPasswordController.text.toString().isNotEmpty || result['email'] == lEmailController.text.toString() || result['password'] == lPasswordController.text.toString()){
+          isValidUser = true;
+        }
+      }
+    }
+    return isValidUser;
   }
 }
