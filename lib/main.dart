@@ -1,36 +1,40 @@
 // @dart=2.9
+import 'package:drusti/HomePage.dart';
 import 'package:flutter/material.dart';
 import 'package:drusti/LoginAndRegistration.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(MyApp());
+Future<void> main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await SharedPreferences.getInstance().then((prefs) {
+    runApp(MyApp(prefs: prefs));
+  });
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+  SharedPreferences prefs;
+  MyApp({ this.prefs});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Drusti',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: LandingPage(title: 'Choose Your User'),
+        primarySwatch: Colors.amber,),
+       home: _decideLandingPage(),
     );
+  }
+  _decideLandingPage(){
+    if(this.prefs == null || this.prefs.getString("token") == null){
+      return LandingPage(title:"Choose User");
+    }else{
+      return HomePage();
+    }
   }
 }
 
 class LandingPage extends StatefulWidget {
-  LandingPage({ this.title}) : super();
+  LandingPage({this.title}) : super();
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -42,23 +46,12 @@ class LandingPage extends StatefulWidget {
   // always marked "final".
 
   final String title;
+
   @override
   LandingPageState createState() => LandingPageState();
 }
 
 class LandingPageState extends State<LandingPage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,39 +88,7 @@ class LandingPageState extends State<LandingPage> {
           mainAxisAlignment: MainAxisAlignment.center,
 
           children: <Widget>[
-    const SizedBox(height: 30),
-    ClipRRect(
-    borderRadius: BorderRadius.circular(4),
-    child: Stack(
-    children: <Widget>[
-    Positioned.fill(
-    child: Container(
-    decoration: const BoxDecoration(
-    color: Colors.blue,
-    ),
-      width:100,
-    ),
-    ),
-      TextButton(
-        style: TextButton.styleFrom(
-          padding: const EdgeInsets.all(16.0),
-          primary: Colors.white,
-          textStyle: const TextStyle(fontSize: 20),
-        ),
-        onPressed: () {
-          Navigator.push<void>(
-            context,
-            MaterialPageRoute<void>(
-              builder: (BuildContext context) =>   LoginAndRegisteration(type:'Institute',),
-            ),
-          );
-        },
-        child: const Text('Institution'),
-      ),
-    ],
-    ),
-    ),
-            const SizedBox(height: 30,width:100),
+            const SizedBox(height: 30),
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
               child: Stack(
@@ -137,7 +98,42 @@ class LandingPageState extends State<LandingPage> {
                       decoration: const BoxDecoration(
                         color: Colors.blue,
                       ),
-                      width:100,
+                      width: 100,
+                    ),
+                  ),
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.all(16.0),
+                      primary: Colors.white,
+                      textStyle: const TextStyle(fontSize: 20),
+                    ),
+                    onPressed: () {
+                      Navigator.push<void>(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (BuildContext context) =>
+                              LoginAndRegisteration(
+                            type: 'Institute',
+                          ),
+                        ),
+                      );
+                    },
+                    child: const Text('Institution'),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 30, width: 100),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: Stack(
+                children: <Widget>[
+                  Positioned.fill(
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.blue,
+                      ),
+                      width: 100,
                     ),
                   ),
                   TextButton(
@@ -152,7 +148,10 @@ class LandingPageState extends State<LandingPage> {
                 ],
               ),
             ),
-            const SizedBox(height: 30,width:100,),
+            const SizedBox(
+              height: 30,
+              width: 100,
+            ),
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
               child: Stack(
@@ -178,12 +177,9 @@ class LandingPageState extends State<LandingPage> {
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+
+
 }
