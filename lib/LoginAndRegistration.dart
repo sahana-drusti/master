@@ -536,6 +536,9 @@ class LoginAndRegisterationPageState extends State {
     print(response);
     if (response.statusCode != 200) {
       throw Exception('error while creating user');
+    }else{
+      SharedPreferences localStorage = await SharedPreferences.getInstance();
+      localStorage.setString("token", rEmailController.text.toString());
     }
 
     return response;
