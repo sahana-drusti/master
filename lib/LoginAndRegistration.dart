@@ -1,11 +1,11 @@
 import 'dart:convert';
-import 'package:flutter_session/flutter_session.dart';
 import 'package:drusti/HomePage.dart';
 import 'package:drusti/PasswordReset.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginAndRegisteration extends StatelessWidget {
   final String type;
@@ -301,7 +301,7 @@ class LoginAndRegisterationPageState extends State {
                                     labelText: "E-mail."),
                                 validator: (val) {
                                   if (val == null || val.isEmpty) {
-                                    return 'Please enter UserName';
+                                    return 'Please enter Email';
                                   }
                                 },
                                 onChanged: (value) => {
@@ -543,6 +543,7 @@ class LoginAndRegisterationPageState extends State {
 
   Future<bool> getUserAndValidate() async {
     bool isValidUser = false;
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
     if(lEmailController.text.isNotEmpty) {
       String url = "http://192.168.1.9:3000/users?email=" +
           lEmailController.text.toString();
@@ -550,6 +551,7 @@ class LoginAndRegisterationPageState extends State {
       if(response.statusCode == 200){
         var result = json.decode(response.body);
         if(lEmailController.text.toString().isNotEmpty || lPasswordController.text.toString().isNotEmpty || result['email'] == lEmailController.text.toString() || result['password'] == lPasswordController.text.toString()){
+          localStorage.setString("token", lEmailController.text.toString());
           isValidUser = true;
         }
       }
