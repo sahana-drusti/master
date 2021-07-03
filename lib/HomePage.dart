@@ -1,8 +1,9 @@
-import 'package:drusti/LoginAndRegistration.dart';
 import 'package:drusti/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'MyProfile.dart';
 
 
 class HomePage extends StatelessWidget {
@@ -56,7 +57,9 @@ class HomeState extends State {
               return {'Profile', 'Settings', 'Logout'}.map((String choice) {
                 return PopupMenuItem<String>(
                   value: choice,
-                  child: Text(choice),
+                  child: TextButton(child: Text(choice), onPressed: () {
+                    checkChoiceAndRedirect(choice);
+                  },),
                 );
               }).toList();
             },
@@ -261,5 +264,16 @@ class HomeState extends State {
       context,
       MaterialPageRoute(builder: (context) => MyApp()),
     );
+  }
+
+  void checkChoiceAndRedirect(String choice) {
+    switch(choice){
+      case "Profile":{
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MyProfile()),
+        );
+      }
+    }
   }
 }
