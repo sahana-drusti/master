@@ -1,185 +1,265 @@
-// @dart=2.9
-import 'package:drusti/HomePage.dart';
-import 'package:flutter/material.dart';
 import 'package:drusti/LoginAndRegistration.dart';
+import 'package:drusti/main.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future<void> main() async{
-  WidgetsFlutterBinding.ensureInitialized();
-  await SharedPreferences.getInstance().then((prefs) {
-    runApp(MyApp(prefs: prefs));
-  });
-}
 
-class MyApp extends StatelessWidget {
-  SharedPreferences prefs;
-  MyApp({ this.prefs});
+class HomePage extends StatelessWidget {
+  HomePage();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Drusti',
-      debugShowCheckedModeBanner: false,
+      title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.amber,),
-      home: _decideLandingPage(),
+        primarySwatch: Colors.amber,
+      ),
+      home: Home(),
     );
   }
-  _decideLandingPage(){
-    if(this.prefs == null || this.prefs.getString("token") == null){
-      return LandingPage(title:"Choose User");
-    }else{
-      return HomePage();
+}
+
+class Home extends StatefulWidget {
+  @override
+  HomeState createState() => HomeState();
+}
+
+class HomeState extends State {
+  void handleClick(String value) {
+    switch (value) {
+      case 'Profile':
+        break;
+      case 'Settings':
+        break;
+      case 'Logout':
+        logOut();
+        break;
     }
   }
-}
-
-class LandingPage extends StatefulWidget {
-  LandingPage({this.title}) : super();
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  LandingPageState createState() => LandingPageState();
-}
-
-class LandingPageState extends State<LandingPage> {
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double deviceHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18.0),
+        ),
+        backgroundColor: Colors.white,
+        title: Text('Homepage'),
+        actions: <Widget>[
+          PopupMenuButton<String>(
+            onSelected: handleClick,
+            itemBuilder: (BuildContext context) {
+              return {'Profile', 'Settings', 'Logout'}.map((String choice) {
+                return PopupMenuItem<String>(
+                  value: choice,
+                  child: Text(choice),
+                );
+              }).toList();
+            },
+          ),
+        ],
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
+      body: SingleChildScrollView(
+        child: Center(
 
+
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  height: deviceHeight * 0.25,
+                  width: deviceWidth * 0.90,
+                  margin: EdgeInsets.all(20.0),
+                  padding: EdgeInsets.all(12.0),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(40),
+                      color: Colors.black),
+                  child: Column(
+                    children: <Widget>[
+                      Text(
+                        'ADD STUDENT',
+                        textAlign: TextAlign.right,
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold,fontSize: 30),
+                      ),
+                      IconButton(
+                        alignment: Alignment.center,
+                        icon: Icon(Icons.add_circle_outline_sharp, size: 50),
+                        color: Colors.white,
+                        onPressed: () {
+                          print("You Pressed the icon!");
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  height: deviceHeight * 0.25,
+                  width: deviceWidth * 0.90,
+                  margin: EdgeInsets.all(20.0),
+                  padding: EdgeInsets.all(12.0),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(40),
+                      color: Colors.black),
+                  child: Column(
+                    children: <Widget>[
+                      Text(
+                        'ADD LECTURE',
+                        textAlign: TextAlign.right,
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold,fontSize: 30),
+                      ),
+                      IconButton(
+                        alignment: Alignment.topRight,
+                        icon: Icon(Icons.add_circle_outline_sharp, size: 50),
+                        color: Colors.white,
+                        onPressed: () {
+                          print("You Pressed the icon!");
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  height: deviceHeight * 0.25,
+                  width: deviceWidth * 0.90,
+                  margin: EdgeInsets.all(20.0),
+                  padding: EdgeInsets.all(12.0),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(40),
+                      color: Colors.black),
+                  child: Column(
+                    children: <Widget>[
+                      Text(
+                        'ADD ',
+                        textAlign: TextAlign.right,
+                        style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold, fontSize: 30),
+                      ),
+                      IconButton(
+                        alignment: Alignment.topRight,
+                        icon: Icon(Icons.add_circle_outline_sharp, size: 50),
+                        color: Colors.white,
+                        onPressed: () {
+                          print("You Pressed the icon!");
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ]),
+        ),
+      ),
+      /* drawer: Drawer(
+        child: Column(
           children: <Widget>[
-            const SizedBox(height: 30),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: Stack(
-                children: <Widget>[
-                  Positioned.fill(
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.blue,
-                      ),
-                      width: 100,
-                    ),
-                  ),
-                  TextButton(
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.all(16.0),
-                      primary: Colors.white,
-                      textStyle: const TextStyle(fontSize: 20),
-                    ),
-                    onPressed: () {
-                      Navigator.push<void>(
-                        context,
-                        MaterialPageRoute<void>(
-                          builder: (BuildContext context) =>
-                              LoginAndRegisteration(
-                                type: 'Institute',
-                              ),
-                        ),
-                      );
-                    },
-                    child: const Text('Institution'),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 30, width: 100),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: Stack(
-                children: <Widget>[
-                  Positioned.fill(
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.blue,
-                      ),
-                      width: 100,
-                    ),
-                  ),
-                  TextButton(
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.all(16.0),
-                      primary: Colors.white,
-                      textStyle: const TextStyle(fontSize: 20),
-                    ),
-                    onPressed: () {},
-                    child: const Text('Vechicle'),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
+            SizedBox(
               height: 30,
-              width: 100,
             ),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: Stack(
-                children: <Widget>[
-                  Positioned.fill(
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.blue,
-                      ),
-                    ),
+            DrawerHeader(
+              child: Container(
+                  height: 142,
+                  width: MediaQuery.of(context).size.width,
                   ),
-                  TextButton(
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.all(16.0),
-                      primary: Colors.white,
-                      textStyle: const TextStyle(fontSize: 20),
-                    ),
-                    onPressed: () {},
-                    child: const Text('Parent'),
-                  ),
-                ],
+              decoration: BoxDecoration(
+                color: Colors.transparent,
               ),
             ),
+            SizedBox(
+              height: 20,
+            ),
+            GestureDetector(
+              onTap: () {
+                setState(() {});
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                'Profile',
+                style: TextStyle(
+                  fontFamily: 'Avenir',
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            SizedBox(
+              height: 45,
+            ),
+            GestureDetector(
+              onTap: () {},
+              child: Text(
+                'Calender',
+                style: TextStyle(
+                  fontFamily: 'Avenir',
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            SizedBox(
+              height: 45,
+            ),
+            Text(
+              'Announcement',
+              style: TextStyle(
+                fontFamily: 'Avenir',
+                fontSize: 24,
+                fontWeight: FontWeight.w700,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: 45,
+            ),
+            Text(
+              'Log Out',
+              style: TextStyle(
+                fontFamily: 'Avenir',
+                fontSize: 24,
+                fontWeight: FontWeight.w700,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: 45,
+            ),
+            Expanded(
+                child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                height: 65,
+                width: MediaQuery.of(context).size.width,
+                color: Colors.black,
+                child: Center(
+                  child: Text(
+                    'DRUSTI',
+                    style: TextStyle(
+                      fontFamily: 'Avenir',
+                      fontSize: 20,
+                      color: const Color(0xffffffff),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ))
           ],
         ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),*/
     );
   }
 
-
+  Future<void> logOut() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.clear();
+    pref.commit();
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MyApp()),
+    );
+  }
 }
