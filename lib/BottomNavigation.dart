@@ -1,4 +1,7 @@
+import 'package:drusti/Add.dart';
 import 'package:drusti/Calendar.dart';
+import 'package:drusti/CreateStaff.dart';
+import 'package:drusti/CreateStudent.dart';
 import 'package:drusti/HomePage.dart';
 import 'package:drusti/Notifications.dart';
 import 'package:flutter/cupertino.dart';
@@ -58,18 +61,24 @@ class BottomNavigationState extends State {
                             TextButton.icon(
                               icon: Icon(Icons.add_circle_outline_sharp,size: 40,color: Colors.black,),
                               label:Text('Create student',style: TextStyle(color: Colors.black, fontSize: 20),),
-                              onPressed: (){},
+                              onPressed: (){
+                                Navigator.push(context, MaterialPageRoute(builder: (builder) => CreateStudent()));
+                              },
                             ),
                             TextButton.icon(
                               icon: Icon(Icons.add_circle_outline_sharp,size: 40,color: Colors.black,),
                               label: Text('Create staff',style: TextStyle(color: Colors.black,fontSize: 20),),
-                              onPressed: (){},
+                              onPressed: (){
+                                Navigator.push(context, MaterialPageRoute(builder: (builder) => CreateStaff()));
+                              },
                             ),
                             TextButton.icon(
 
                               icon: Icon(Icons.camera,size: 40,color: Colors.black,),
                               label: Text('Create/Add',style: TextStyle(color: Colors.black,fontSize: 20),),
-                              onPressed: (){},
+                              onPressed: (){
+                                Navigator.push(context, MaterialPageRoute(builder: (builder) => CreateAdd()));
+                              },
                             ),
 
                           ],
@@ -102,8 +111,7 @@ class BottomNavigationState extends State {
   static List<Widget> _widgetOptions = <Widget>[
     Home(),
     Announcement(),
-    Text('Search Page',
-        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+
     Notifications(),
     Calendar(),
   ];

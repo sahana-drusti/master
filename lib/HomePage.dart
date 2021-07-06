@@ -147,15 +147,5 @@ class HomeState extends State {
     );
   }
 
-  void checkChoiceAndRedirect(String choice) {
-    switch (choice) {
-      case "Profile":
-        {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => MyProfile()),
-          );
-        }
-    }
-  }
+
 }
