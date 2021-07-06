@@ -1,10 +1,12 @@
+import 'package:drusti/Add.dart';
+import 'package:drusti/CreateStaff.dart';
+import 'package:drusti/CreateStudent.dart';
 import 'package:drusti/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'MyProfile.dart';
-
 
 class HomePage extends StatelessWidget {
   HomePage();
@@ -30,8 +32,10 @@ class HomeState extends State {
   void handleClick(String value) {
     switch (value) {
       case 'Profile':
-        break;
-      case 'Settings':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MyProfile()),
+        );
         break;
       case 'Logout':
         logOut();
@@ -57,9 +61,10 @@ class HomeState extends State {
               return {'Profile', 'Settings', 'Logout'}.map((String choice) {
                 return PopupMenuItem<String>(
                   value: choice,
-                  child: TextButton(child: Text(choice), onPressed: () {
-                    checkChoiceAndRedirect(choice);
-                  },),
+
+                    child: Text(choice),
+
+
                 );
               }).toList();
             },
@@ -67,194 +72,70 @@ class HomeState extends State {
         ],
       ),
       body: SingleChildScrollView(
-        child: Center(
-
-
           child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  height: deviceHeight * 0.25,
-                  width: deviceWidth * 0.90,
-                  margin: EdgeInsets.all(20.0),
-                  padding: EdgeInsets.all(12.0),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(40),
-                      color: Colors.black),
-                  child: Column(
-                    children: <Widget>[
-                      Text(
-                        'ADD STUDENT',
-                        textAlign: TextAlign.right,
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold,fontSize: 30),
-                      ),
-                      IconButton(
-                        alignment: Alignment.center,
-                        icon: Icon(Icons.add_circle_outline_sharp, size: 50),
-                        color: Colors.white,
-                        onPressed: () {
-                          print("You Pressed the icon!");
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  height: deviceHeight * 0.25,
-                  width: deviceWidth * 0.90,
-                  margin: EdgeInsets.all(20.0),
-                  padding: EdgeInsets.all(12.0),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(40),
-                      color: Colors.black),
-                  child: Column(
-                    children: <Widget>[
-                      Text(
-                        'ADD LECTURE',
-                        textAlign: TextAlign.right,
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold,fontSize: 30),
-                      ),
-                      IconButton(
-                        alignment: Alignment.topRight,
-                        icon: Icon(Icons.add_circle_outline_sharp, size: 50),
-                        color: Colors.white,
-                        onPressed: () {
-                          print("You Pressed the icon!");
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  height: deviceHeight * 0.25,
-                  width: deviceWidth * 0.90,
-                  margin: EdgeInsets.all(20.0),
-                  padding: EdgeInsets.all(12.0),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(40),
-                      color: Colors.black),
-                  child: Column(
-                    children: <Widget>[
-                      Text(
-                        'ADD ',
-                        textAlign: TextAlign.right,
-                        style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold, fontSize: 30),
-                      ),
-                      IconButton(
-                        alignment: Alignment.topRight,
-                        icon: Icon(Icons.add_circle_outline_sharp, size: 50),
-                        color: Colors.white,
-                        onPressed: () {
-                          print("You Pressed the icon!");
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ]),
-        ),
-      ),
-      /* drawer: Drawer(
-        child: Column(
-          children: <Widget>[
-            SizedBox(
-              height: 30,
-            ),
-            DrawerHeader(
-              child: Container(
-                  height: 142,
-                  width: MediaQuery.of(context).size.width,
-                  ),
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-              ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            GestureDetector(
-              onTap: () {
-                setState(() {});
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                'Profile',
-                style: TextStyle(
-                  fontFamily: 'Avenir',
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            SizedBox(
-              height: 45,
-            ),
-            GestureDetector(
-              onTap: () {},
-              child: Text(
-                'Calender',
-                style: TextStyle(
-                  fontFamily: 'Avenir',
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            SizedBox(
-              height: 45,
-            ),
-            Text(
-              'Announcement',
-              style: TextStyle(
-                fontFamily: 'Avenir',
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(
-              height: 45,
-            ),
-            Text(
-              'Log Out',
-              style: TextStyle(
-                fontFamily: 'Avenir',
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(
-              height: 45,
-            ),
-            Expanded(
-                child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                height: 65,
-                width: MediaQuery.of(context).size.width,
-                color: Colors.black,
-                child: Center(
-                  child: Text(
-                    'DRUSTI',
-                    style: TextStyle(
-                      fontFamily: 'Avenir',
-                      fontSize: 20,
-                      color: const Color(0xffffffff),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-            ))
-          ],
-        ),
-      ),*/
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          createContainer(addDetails("Add Student",CreateStudent()), 150.0),
+          createContainer(addDetails("Add Staff", CreateStaff()), 150.0),
+          createContainer(addDetails("Add", CreateAdd()), 150.0),
+        ],
+      )),
     );
   }
+
+  createContainer(details, double d) {
+    return (Center(
+      child: Container(
+        margin: EdgeInsets.only(top: 20.0),
+        color: Colors.transparent,
+        height: d,
+        width: 350.0,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.black12,
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          ),
+          child: details,
+        ),
+      ),
+    ));
+  }
+
+  addDetails( String s, Widget w) {
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.only( top: 25.0),
+            child: Column(children: [
+              Text(
+                s,
+                style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.bold),
+              ),
+            ]),
+          ),
+          Container(
+            margin : EdgeInsets.only(right: 20.0),
+            child: IconButton(
+              onPressed: () {
+               Navigator.push(context, MaterialPageRoute(builder: (builder) => w));
+              },
+              icon: Icon(
+                Icons.add_circle_outline_sharp,
+                size: 64.0,
+              ),
+              alignment: Alignment.center,
+            ),
+          ),
+
+        ],
+      ),
+    );
+  }
+
 
   Future<void> logOut() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -266,14 +147,5 @@ class HomeState extends State {
     );
   }
 
-  void checkChoiceAndRedirect(String choice) {
-    switch(choice){
-      case "Profile":{
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => MyProfile()),
-        );
-      }
-    }
-  }
+
 }
