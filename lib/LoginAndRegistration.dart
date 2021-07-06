@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:drusti/BottomNavigation.dart';
 import 'package:drusti/HomePage.dart';
 import 'package:drusti/PasswordReset.dart';
 import 'package:flutter/cupertino.dart';
@@ -161,7 +162,7 @@ class LoginAndRegisterationPageState extends State {
                                Navigator.push(
                                  context,
                                  MaterialPageRoute(
-                                     builder: (context) => HomePage()),
+                                     builder: (context) => BottomNavigation()),
                                )
                                }});
 
@@ -380,7 +381,7 @@ class LoginAndRegisterationPageState extends State {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => HomePage()),
+                                      builder: (context) => BottomNavigation()),
                                 );
                               }
                             },

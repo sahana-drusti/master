@@ -1,4 +1,5 @@
 // @dart=2.9
+import 'package:drusti/BottomNavigation.dart';
 import 'package:drusti/HomePage.dart';
 import 'package:flutter/material.dart';
 import 'package:drusti/LoginAndRegistration.dart';
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
     if(this.prefs == null || this.prefs.getString("token") == null){
       return LandingPage(title:"Choose User");
     }else{
-      return HomePage();
+      return BottomNavigation();
     }
   }
 }
