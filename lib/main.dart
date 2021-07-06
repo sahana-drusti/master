@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       title: 'Drusti',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.amber,),
+        primarySwatch: Colors.grey,),
        home: _decideLandingPage(),
     );
   }
