@@ -111,7 +111,7 @@ class BottomNavigationState extends State {
   static List<Widget> _widgetOptions = <Widget>[
     Home(),
     Announcement(),
-
+    Home(),
     Notifications(),
     Calendar(),
   ];
