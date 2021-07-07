@@ -429,8 +429,9 @@ class LoginAndRegisterationPageState extends State {
       final response = await http.get(Uri.parse(url));
       if(response.statusCode == 200){
         var result = json.decode(response.body);
+        String userId = result['_id'];
         if(lEmailController.text.toString().isNotEmpty || lPasswordController.text.toString().isNotEmpty || result['email'] == lEmailController.text.toString() || result['password'] == lPasswordController.text.toString()){
-          localStorage.setString("token", lEmailController.text.toString());
+          localStorage.setString("token", userId);
           isValidUser = true;
         }
       }
