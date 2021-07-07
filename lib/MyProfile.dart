@@ -1,6 +1,10 @@
-import 'package:drusti/HomePage.dart';
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MyProfile extends StatelessWidget {
   @override
@@ -19,12 +23,23 @@ class MyProfileState extends State {
   final _formKey = GlobalKey<FormState>();
   List country = ["India"];
   var countryValue = "India";
-  List state = ["karnataka", "goa", "mp"];
-  var stateValue = "karnataka";
+  List state = ["Andhra Pradesh","Arunachal Pradesh ","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana","Himachal Pradesh","Jammu and Kashmir","Jharkhand","Karnataka","Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal","Andaman and Nicobar Islands","Chandigarh","Dadra and Nagar Haveli","Daman and Diu","Lakshadweep","National Capital Territory of Delhi","Puducherry"];
+  var stateValue = "";
   List district = ["hassan", "banglore"];
-  var districtValue = "hassan";
+  var districtValue = "";
   List taluk = ["alur", "belur"];
-  var talukValue = "alur";
+  var talukValue = "";
+  String addressLine1 = "";
+  String addressLine2 = "";
+  List addressResult = [];
+  String addressId = "";
+  String zipCode = "test";
+  String userId = "";
+  TextEditingController addressLine1Controller = TextEditingController();
+  TextEditingController addressLine2Controller = TextEditingController();
+  TextEditingController zipCodeController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +57,7 @@ class MyProfileState extends State {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           createContainer(profileDetails(), 150.0),
-          createContainer(addAddress(), 200.0),
+          createContainer(addressContainer(), 200.0),
           createContainer(updatePassword(), 80.0),
           createContainer(updateContact(), 80.0),
         ],
@@ -119,7 +134,7 @@ class MyProfileState extends State {
             ),
             Container(
               margin: EdgeInsets.only(left: 200.0),
-              child: checkAddress() ? editIcon() : addIcon(),
+              child:  addIcon(),
             )
           ],
         ),
@@ -150,18 +165,25 @@ class MyProfileState extends State {
     ));
   }
 
-  checkAddress() {
-    return false;
-  }
+  checkAddress() async {
+    bool isAvail = false;
+    await getAddress().then((value) => {
+      if(value){
+        isAvail = true
+      }
+    });
+    return isAvail;
+      }
 
   editIcon() {
-    return (IconButton(onPressed: () {}, icon: Icon(Icons.edit)));
+    return (IconButton(onPressed: () {showDialogBox(createAddressForm(false));}, icon: Icon(Icons.edit)));
+
   }
 
   addIcon() {
     return (IconButton(
         onPressed: () {
-          showDialogBox(createAddressForm());
+          showDialogBox(createAddressForm(true));
         },
         icon: Icon(Icons.add_box_outlined)));
   }
@@ -208,7 +230,7 @@ class MyProfileState extends State {
         });
   }
 
-  Widget createAddressForm() {
+  Widget createAddressForm(bool createReq) {
     return (Scaffold(
         body: SingleChildScrollView(
             child: Center(
@@ -223,6 +245,7 @@ class MyProfileState extends State {
           Padding(
             padding: EdgeInsets.only(top: 30.0, bottom: 10.0),
             child: TextFormField(
+              controller: addressLine1Controller,
               decoration: new InputDecoration(
                 isDense: true,
                 contentPadding:
@@ -248,6 +271,7 @@ class MyProfileState extends State {
           Padding(
             padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
             child: TextFormField(
+              controller: addressLine2Controller,
               decoration: new InputDecoration(
                 isDense: true,
                 contentPadding:
@@ -321,7 +345,7 @@ class MyProfileState extends State {
                     value: e,
                   ));
                 }).toList(),
-                value: stateValue,
+                value: state[0],
                 onChanged: (value) {
                   setState(() {
                     stateValue = value.toString();
@@ -351,7 +375,7 @@ class MyProfileState extends State {
                     value: e,
                   ));
                 }).toList(),
-                value: districtValue,
+                value: district[0],
                 onChanged: (value) {
                   setState(() {
                     districtValue = value.toString();
@@ -381,10 +405,11 @@ class MyProfileState extends State {
                     value: e,
                   ));
                 }).toList(),
-                value: talukValue,
+                value: taluk[0],
                 onChanged: (value) {
                   setState(() {
                     talukValue = value.toString();
+                    print(talukValue);
                   });
                 },
               )),
@@ -406,6 +431,7 @@ class MyProfileState extends State {
                   hintText: 'PinCode',
                   labelText: 'PinCode',
                 ),
+                controller: zipCodeController,
                 validator: (val) {
                   if (val == null || val.isEmpty) {
                     return 'Please enter pincode';
@@ -417,7 +443,7 @@ class MyProfileState extends State {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context, rootNavigator: true).pop();
+                  returnBack();
                 },
                 child: Text(
                   "Back",
@@ -427,7 +453,20 @@ class MyProfileState extends State {
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate())
-                    Navigator.of(context, rootNavigator: true).pop();
+                    {
+                      print(createReq);
+                      if(createReq){
+                        setState(() {
+                          final response = createAddress().then((value) => returnBack());
+                        });
+
+                      }else{
+                        setState(() {
+                          final response = updateAddress().then((value) => returnBack());
+                        });
+
+                      }
+                    }
                 },
                 child: Text(
                   "Save",
@@ -468,6 +507,7 @@ class MyProfileState extends State {
                                   hintText: 'Password',
                                   labelText: "Password",
                                 ),
+                                controller: passwordController,
                                 validator: (val) {
                                   if (val == null || val.isEmpty) {
                                     return 'Please enter Password';
@@ -503,16 +543,18 @@ class MyProfileState extends State {
 
                               ElevatedButton(
                                 onPressed: () {
-                                  Navigator.of(context, rootNavigator: true)
-                                      .pop(); // Validate returns true if the form is valid, or false otherwise.
+                                  returnBack(); // Validate returns true if the form is valid, or false otherwise.
                                 },
                                 child: Text('Back'),
                               ),
                               ElevatedButton(
                                 onPressed: () {
-                                  if (_formKey.currentState!.validate())
-                                    Navigator.of(context, rootNavigator: true)
-                                        .pop(); // Validate returns true if the form is valid, or false otherwise.
+                                  if (_formKey.currentState!.validate()){
+                                    setState(() {
+                                      final response = updateUserPassword().then((value) => returnBack());
+                                    });
+                                        }
+                                     // Validate returns true if the form is valid, or false otherwise.
                                 },
                                 child: Text('Submit'),
                               ),
@@ -524,6 +566,207 @@ class MyProfileState extends State {
             )
         )
     )
+    );
+  }
+
+  Future<bool> getAddress() async {
+    bool addressPresent = false;
+    await SharedPreferences.getInstance().then((value) => userId = value.getString("token")!);
+    String url = "http://192.168.1.9:3000/address?userId="+userId;
+    var response = await http.get(Uri.parse(url));
+    var result = json.decode(response.body);
+    if(result.toString().length > 2){
+      addressPresent = true;
+      addressResult = json.decode(response.body);
+    }
+    return addressPresent;
+
+  }
+
+  addressContainer() {
+    return (FutureBuilder(
+      future: getAddress(),
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        List<Widget> children;
+        if(snapshot.hasData && snapshot.data){
+          addData();
+          children = <Widget>[
+            editAddress()
+
+          ];
+        }else{
+          children = <Widget>[
+             addAddress()
+          ];
+
+        }
+        return Column(
+          children: children
+
+        );
+    },
+
+    ));
+  }
+
+  editAddress() {
+
+    return (Column(
+      children: [
+        Row(
+          children: [
+            Container(
+              margin: EdgeInsets.only(left: 20.0),
+              child: Text('Address',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            ),
+            /**/
+            Container(
+              margin: EdgeInsets.only(left: 150.0),
+              child:  editIcon(),
+            ),
+            Container(
+              margin: EdgeInsets.only(right:10.0),
+              child:  deleteIcon(),
+            ),
+          ],
+        ),
+        Divider(
+          color: Colors.black,
+        ),
+        Container(
+          child: Text(addressLine1),
+        ),
+        Container(
+          child: Text(addressLine2),
+        ),
+        Container(
+          child: Text(talukValue),
+        ),
+        Container(
+          child: Text(districtValue),
+        ),
+        Container(
+          child: Text(zipCode),
+        ),
+        Container(
+          child: Text(stateValue),
+        ),
+        Container(
+          child: Text(countryValue),
+        ),
+
+      ],
+    ));
+  }
+
+  void addData() {
+    if(addressResult.isNotEmpty){
+      addressLine1 = addressResult.elementAt(0)['addressLine1'];
+      addressLine2 = addressResult.elementAt(0)['addressLine2'];
+      talukValue = addressResult.elementAt(0)['taluk'];
+      stateValue = addressResult.elementAt(0)['state'];
+      districtValue = addressResult.elementAt(0)['district'];
+      countryValue = addressResult.elementAt(0)['country'];
+      zipCode = addressResult.elementAt(0)['zipCode'];
+      addressId = addressResult.elementAt(0)['_id'];
+      if(addressLine1 != null && addressLine1.isNotEmpty)
+        addressLine1Controller.value = TextEditingValue(text: addressLine1);
+      if(addressLine2 != null && addressLine2.isNotEmpty)
+        addressLine2Controller.value= TextEditingValue(text: addressLine2);
+      if(zipCode != null && zipCode.isNotEmpty)
+        zipCodeController.value = TextEditingValue(text: zipCode);
+    }
+
+  }
+
+  Future<http.Response> updateAddress() async {
+      String url = "http://192.168.1.9:3000/address";
+      print(talukValue);
+      var response = await http.put(Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String,String>{
+          "addressId": addressId,
+          "addressLine1": addressLine1,
+          "addressLine2": addressLine2,
+          "state": stateValue,
+          "taluk": talukValue,
+          "zipCode": zipCodeController.text.toString(),
+          "district": districtValue,
+          "country": countryValue,
+          "userId":userId
+        })
+      );
+      print(response.body)
+     ; if(response.statusCode !=200){
+        throw Exception("Error Updating Address");
+      }
+      return response;
+  }
+
+  returnBack(){
+    Navigator.of(context, rootNavigator: true)
+        .pop();
+  }
+
+  deleteIcon() {
+    return (
+        IconButton(
+            onPressed: () {
+              setState(() {
+                deleteAddress();
+                countryValue ="";
+              });
+
+              },
+            icon: Icon(Icons.delete)
+        )
+    );
+  }
+
+  Future<void> deleteAddress() async {
+    String url = "http://192.168.1.9:3000/address?addressId="+addressId;
+    final response = await http.delete(Uri.parse(url));
+    if(response.statusCode != 200 ){
+      throw Exception('Error while deleting Address');
+    }
+
+  }
+
+  Future<http.Response> createAddress() async {
+    String url = "http://192.168.1.9:3000/address";
+    final response = await http.post(Uri.parse(url),headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+        body: jsonEncode(<String,String>{
+          //"addressId": addressId,
+          "addressLine1": addressLine1,
+          "addressLine2": addressLine2,
+          "state": stateValue,
+          "taluk": talukValue,
+          "zipCode": zipCodeController.text.toString(),
+          "district": districtValue,
+          "country": countryValue,
+          "userId":userId
+        })
+    );
+    print(response.body);
+    if(response.statusCode !=200){
+      throw Exception("Error Creating Address");
+    }
+    return response;
+  }
+
+  Future<void> updateUserPassword() async {
+    String url = "http://192.168.1.9:3000/users?userId="+userId;
+    final response = await http.put(Uri.parse(url),headers: <String, String>{
+    'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String,String>{
+    "password": passwordController.text.toString(),
+    })
     );
   }
 }
