@@ -51,22 +51,24 @@ class BottomNavigationState extends State {
                   context: context,
                   builder: (BuildContext context) {
                     return Container(
-                      height: 200,
+                      height: 220,
                       child: Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Text('Create',style: TextStyle(color: Colors.black, fontSize: 20),),
-
+                            Text('CREATE',style: TextStyle(color: Colors.black, fontSize: 20,fontWeight: FontWeight.bold),),
+                            Divider(
+                              color: Colors.black,
+                            ),
                             TextButton.icon(
-                              icon: Icon(Icons.add_circle_outline_sharp,size: 40,color: Colors.black,),
+                              icon: Icon(Icons.add,size: 40,color: Colors.black,),
                               label:Text('Create student',style: TextStyle(color: Colors.black, fontSize: 20),),
                               onPressed: (){
                                 Navigator.push(context, MaterialPageRoute(builder: (builder) => CreateStudent()));
                               },
                             ),
                             TextButton.icon(
-                              icon: Icon(Icons.add_circle_outline_sharp,size: 40,color: Colors.black,),
+                              icon: Icon(Icons.add,size: 40,color: Colors.black,),
                               label: Text('Create staff',style: TextStyle(color: Colors.black,fontSize: 20),),
                               onPressed: (){
                                 Navigator.push(context, MaterialPageRoute(builder: (builder) => CreateStaff()));
@@ -74,7 +76,7 @@ class BottomNavigationState extends State {
                             ),
                             TextButton.icon(
 
-                              icon: Icon(Icons.camera,size: 40,color: Colors.black,),
+                              icon: Icon(Icons.add,size: 40,color: Colors.black,),
                               label: Text('Create/Add',style: TextStyle(color: Colors.black,fontSize: 20),),
                               onPressed: (){
                                 Navigator.push(context, MaterialPageRoute(builder: (builder) => CreateAdd()));
