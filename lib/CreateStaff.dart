@@ -10,10 +10,14 @@ class CreateStaff extends StatefulWidget {
 
 class CreateStaffState extends State<CreateStaff> {
   final _formKey = GlobalKey<FormState>();
+  final _formKey1 = GlobalKey<FormState>();
   int val = 1;
   bool validPhoneNo = true;
   bool validEmail = true;
-
+  bool validParentForm = false;
+  bool validBasicForm = false;
+  bool validContactForm = false;
+  bool validAddressForm = false;
   bool validRegNo = true;
   bool address_Value = false;
   String radioItem = '';
@@ -81,15 +85,16 @@ class CreateStaffState extends State<CreateStaff> {
 
   final textController = TextEditingController();
   late DateTime date = new DateTime.now();
-  String getDate(){
+  String getDate() {
     String currentSelected = "Today";
-    if(date != DateTime.now()){
-      currentSelected = '${date.day}'+"/"+'${date.month}'+"/"+'${date.year}';
+    if (date != DateTime.now()) {
+      currentSelected =
+          '${date.day}' + "/" + '${date.month}' + "/" + '${date.year}';
     }
     return currentSelected;
   }
-  TextEditingController dateController = TextEditingController();
 
+  TextEditingController dateController = TextEditingController();
   TextEditingController addressLine1Controller = TextEditingController();
   TextEditingController addressLine2Controller = TextEditingController();
   TextEditingController zipCodeController = TextEditingController();
@@ -105,43 +110,71 @@ class CreateStaffState extends State<CreateStaff> {
           actions: <Widget>[
             IconButton(
                 icon: Icon(
-                  Icons.unarchive,
+                  Icons.upload,
                   color: Colors.white,
                 ),
                 onPressed: () {
                   Dialog errorDialog = Dialog(
                     shape: RoundedRectangleBorder(
                         borderRadius:
-                            BorderRadius.circular(12.0)), //this right here
+                        BorderRadius.circular(12.0)), //this right here
                     child: Container(
                       height: 300.0,
-                      width: 300.0,
+                      width: 600.0,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Padding(
                             padding: EdgeInsets.all(15.0),
                             child: Text(
-                              'Cool',
+                              'Choose files to Upload',
                               style: TextStyle(color: Colors.red),
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.all(15.0),
-                            child: Text(
-                              'Awesome',
-                              style: TextStyle(color: Colors.red),
+                            padding: EdgeInsets.only(
+                                top: 10.0, bottom: 10.0, left: 60, right: 60),
+                            child: TextFormField(
+                              controller: addressLine2Controller,
+                              decoration: new InputDecoration(
+                                isDense: true,
+                                contentPadding: new EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 10.0),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(32.0)),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.black, width: 1.0),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.black, width: 1.0),
+                                ),
+                                hintText: 'Choose file to Upload',
+                                labelText: 'Choose file to Upload',
+                              ),
+                              validator: (val) {
+                                if (val == null || val.isEmpty) {
+                                  return 'Please select a file';
+                                }
+                              },
                             ),
                           ),
-                          Padding(padding: EdgeInsets.only(top: 50.0)),
-                          TextButton(
+                          ElevatedButton(
+                              onPressed: () {},
+                              child: Text(
+                                'Browse!',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 18.0),
+                              )),
+                          ElevatedButton(
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
                               child: Text(
-                                'Got It!',
+                                'UPLOAD!',
                                 style: TextStyle(
-                                    color: Colors.purple, fontSize: 18.0),
+                                    color: Colors.white, fontSize: 18.0),
                               ))
                         ],
                       ),
@@ -178,12 +211,17 @@ class CreateStaffState extends State<CreateStaff> {
                       size: 36.0,
                     ),
                     children: <Widget>[
+                      Container(
+                        child: validBasicForm
+                            ? Text('Some fields are Missing')
+                            : Text(''),
+                      ),
                       Padding(
                           padding: EdgeInsets.only(
                               bottom: 6.0, left: 60, right: 60, top: 10),
                           child: TextFormField(
                             onChanged: (value) {
-                              RegExp exp = RegExp(r'^[a-zA-Z0-9&%=]+$');
+                              RegExp exp = RegExp(r'^[a-zA-Z0-9]+$');
                               if (!exp.hasMatch(value)) {
                                 setState(() {
                                   validRegNo = false;
@@ -210,7 +248,7 @@ class CreateStaffState extends State<CreateStaff> {
                                 labelText: "Reg.No."),
                             validator: (val) {
                               if (val == null || val.isEmpty) {
-                                return 'Please enter registration number';
+                                return 'Please enter Registration number';
                               } else if (!validRegNo) {
                                 return 'Please enter valid Reg. No.';
                               }
@@ -227,18 +265,18 @@ class CreateStaffState extends State<CreateStaff> {
                                   vertical: 10.0, horizontal: 10.0),
                               focusedBorder: OutlineInputBorder(
                                 borderSide:
-                                    BorderSide(color: Colors.black, width: 1.0),
+                                BorderSide(color: Colors.black, width: 1.0),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide:
-                                    BorderSide(color: Colors.black, width: 1.0),
+                                BorderSide(color: Colors.black, width: 1.0),
                               ),
                               hintText: 'First Name',
-                              labelText: "F- name",
+                              labelText: "First name",
                             ),
                             validator: (val) {
                               if (val == null || val.isEmpty) {
-                                return 'Please enter F-Name';
+                                return 'Please enter First Name';
                               }
                             },
                           )),
@@ -253,18 +291,18 @@ class CreateStaffState extends State<CreateStaff> {
                                   vertical: 10.0, horizontal: 10.0),
                               focusedBorder: OutlineInputBorder(
                                 borderSide:
-                                    BorderSide(color: Colors.black, width: 1.0),
+                                BorderSide(color: Colors.black, width: 1.0),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide:
-                                    BorderSide(color: Colors.black, width: 1.0),
+                                BorderSide(color: Colors.black, width: 1.0),
                               ),
                               hintText: 'Middle Name',
-                              labelText: "M-Name",
+                              labelText: "Middle Name",
                             ),
                             validator: (val) {
                               if (val == null || val.isEmpty) {
-                                return 'Please enter M-Name';
+                                return 'Please enter Middle Name';
                               }
                             },
                           )),
@@ -279,18 +317,18 @@ class CreateStaffState extends State<CreateStaff> {
                                   vertical: 10.0, horizontal: 10.0),
                               focusedBorder: OutlineInputBorder(
                                 borderSide:
-                                    BorderSide(color: Colors.black, width: 1.0),
+                                BorderSide(color: Colors.black, width: 1.0),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide:
-                                    BorderSide(color: Colors.black, width: 1.0),
+                                BorderSide(color: Colors.black, width: 1.0),
                               ),
                               hintText: 'Last Name',
-                              labelText: "L-Name",
+                              labelText: "Last Name",
                             ),
                             validator: (val) {
                               if (val == null || val.isEmpty) {
-                                return 'Please enter L-Name';
+                                return 'Please enter Last Name';
                               }
                             },
                           )),
@@ -305,11 +343,11 @@ class CreateStaffState extends State<CreateStaff> {
                                   vertical: 10.0, horizontal: 10.0),
                               focusedBorder: OutlineInputBorder(
                                 borderSide:
-                                    BorderSide(color: Colors.black, width: 1.0),
+                                BorderSide(color: Colors.black, width: 1.0),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderSide:
-                                    BorderSide(color: Colors.black, width: 1.0),
+                                BorderSide(color: Colors.black, width: 1.0),
                               ),
                               hintText: 'Class',
                               labelText: "Class",
@@ -320,13 +358,10 @@ class CreateStaffState extends State<CreateStaff> {
                               }
                             },
                           )),
-                      Container(
-                        child:Padding(
+                      Padding(
                           padding: EdgeInsets.only(
                               bottom: 6.0, left: 60, right: 60, top: 10),
                           child: TextFormField(
-
-
                             autofocus: false,
                             decoration: new InputDecoration(
                               isDense: true,
@@ -343,31 +378,22 @@ class CreateStaffState extends State<CreateStaff> {
                               prefixIcon: Padding(
                                 padding: EdgeInsets.all(0.0),
                                 child: IconButton(
-
                                   icon: const Icon(Icons.calendar_today),
-
                                   onPressed: () {
                                     pickDate(context);
                                   },
-                                ),// icon is 48px widget.
+                                ), // icon is 48px widget.
                               ),
-
                               hintText: 'DOB',
-                              labelText:'DOB',
-
+                              labelText: "DOB",
                             ),
                             controller: dateController,
-
-
                             validator: (val) {
                               if (val == null || val.isEmpty) {
                                 return 'Please enter Date Of Birth';
                               }
                             },
-                          )
-
-                        ),),
-
+                          )),
                       ListTile(
                         title: Text("Male"),
                         leading: Radio(
@@ -394,20 +420,20 @@ class CreateStaffState extends State<CreateStaff> {
                           activeColor: Colors.black,
                         ),
                       ),
-                      if (val == 1)
-                        Text('hii gentelman')
-                      else
-                        (Text('hii lady')),
                       ElevatedButton(
                         onPressed: () {
-                          if (_formKey.currentState!.validate()) {}
-                          // Validate returns true if the form is valid, or false otherwise.
+                          if ((_formKey.currentState!.validate() || true)) {
+                            setState(() {
+                              validBasicForm = true;
+                            });
+                          }
                         },
                         child: Text('Save'),
                       ),
                     ],
                   ),
                 ),
+
                 Container(
                   decoration: BoxDecoration(
                       color: Colors.black12,
@@ -428,13 +454,18 @@ class CreateStaffState extends State<CreateStaff> {
                         size: 36.0,
                       ),
                       children: <Widget>[
+                        Container(
+                          child: validContactForm
+                              ? Text('Some fields are Missing')
+                              : Text(''),
+                        ),
                         Padding(
                             padding: EdgeInsets.only(
                                 bottom: 6.0, left: 60, right: 60, top: 10),
                             child: TextFormField(
                               onChanged: (value) {
                                 RegExp exp =
-                                    RegExp(r'(^(?:[+0]9)?[0-9]{10,12}$)');
+                                RegExp(r'(^(?:[+0]9)?[0-9]{10,12}$)');
                                 if (!exp.hasMatch(value)) {
                                   setState(() {
                                     validPhoneNo = false;
@@ -461,9 +492,9 @@ class CreateStaffState extends State<CreateStaff> {
                                   labelText: "Phone Number"),
                               validator: (val) {
                                 if (val == null || val.isEmpty) {
-                                  return 'Please enter registration number';
+                                  return 'Please enter Phone number';
                                 } else if (!validPhoneNo) {
-                                  return 'Please enter valid Phone. No.';
+                                  return 'Please enter valid Phone number';
                                 }
                               },
                             )),
@@ -473,7 +504,7 @@ class CreateStaffState extends State<CreateStaff> {
                             child: TextFormField(
                               onChanged: (value) {
                                 RegExp exp =
-                                    RegExp(r'(^(?:[+0]9)?[0-9]{10,12}$)');
+                                RegExp(r'(^(?:[+0]9)?[0-9]{10,12}$)');
                                 if (!exp.hasMatch(value)) {
                                   setState(() {
                                     validPhoneNo = false;
@@ -498,13 +529,6 @@ class CreateStaffState extends State<CreateStaff> {
                                   ),
                                   hintText: 'Phone Number-2',
                                   labelText: "Phone Number-2"),
-                              validator: (val) {
-                                if (val == null || val.isEmpty) {
-                                  return 'Please enter registration number';
-                                } else if (!validPhoneNo) {
-                                  return 'Please enter valid Phone. No.';
-                                }
-                              },
                             )),
                         Padding(
                             padding: EdgeInsets.only(
@@ -557,25 +581,14 @@ class CreateStaffState extends State<CreateStaff> {
                                   ),
                                   hintText: 'E-Mail Address 2',
                                   labelText: "E-mail 2."),
-                              validator: (val) {
-                                if (val == null || val.isEmpty) {
-                                  return 'Please enter Email';
-                                }
-                              },
-                              onChanged: (value) => {
-                                setState(() {
-                                  if (EmailValidator.validate(value)) {
-                                    validEmail = true;
-                                  } else {
-                                    validEmail = false;
-                                  }
-                                }),
-                              },
                             )),
                         ElevatedButton(
                           onPressed: () {
-                            if (_formKey.currentState!.validate()) {}
-                            // Validate returns true if the form is valid, or false otherwise.
+                            if ((_formKey.currentState!.validate() || true)) {
+                              setState(() {
+                                validContactForm = true;
+                              });
+                            }
                           },
                           child: Text('Save'),
                         ),
@@ -601,6 +614,11 @@ class CreateStaffState extends State<CreateStaff> {
                         size: 36.0,
                       ),
                       children: <Widget>[
+                        Container(
+                          child: validAddressForm
+                              ? Text('Some fields are Missing')
+                              : Text(''),
+                        ),
                         ListTile(
                           title: Text("Current"),
                           leading: Radio(
@@ -628,7 +646,7 @@ class CreateStaffState extends State<CreateStaff> {
                           ),
                         ),
                         CheckboxListTile(
-                          title: Text("Both address are Same"),
+                          title: Text("Both addresses are Same"),
                           controlAffinity: ListTileControlAffinity.leading,
                           value: address_Value,
                           activeColor: Colors.black,
@@ -650,8 +668,11 @@ class CreateStaffState extends State<CreateStaff> {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            if (_formKey.currentState!.validate()) {}
-                            // Validate returns true if the form is valid, or false otherwise.
+                            if ((_formKey1.currentState!.validate() || true)) {
+                              setState(() {
+                                validAddressForm = true;
+                              });
+                            }
                           },
                           child: Text('Save'),
                         ),
@@ -662,14 +683,12 @@ class CreateStaffState extends State<CreateStaff> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        {}
+                        Navigator.of(context).pop();
                       },
                       child: Text('Back'),
                     ),
                     ElevatedButton(
-                      onPressed: () {
-                        {}
-                      },
+                      onPressed: () {},
                       child: Text('Submit'),
                     ),
                   ],
@@ -681,227 +700,237 @@ class CreateStaffState extends State<CreateStaff> {
   Widget createAddressForm(bool createReq) {
     return (Center(
         child: Form(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(bottom: 6.0, left: 60, right: 60, top: 10),
-            child: TextFormField(
-              controller:
+          key: _formKey1,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(bottom: 6.0, left: 60, right: 60, top: 10),
+                child: TextFormField(
+                  controller:
                   createReq ? addressLine1Controller : pAddressLine1Controller,
-              decoration: new InputDecoration(
-                isDense: true,
-                contentPadding:
+                  decoration: new InputDecoration(
+                    isDense: true,
+                    contentPadding:
                     new EdgeInsets.symmetric(vertical: 10.0, horizontal: 0.0),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(32.0)),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 1.0),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(32.0)),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black, width: 1.0),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black, width: 1.0),
+                    ),
+                    hintText: 'Addressline 1',
+                    labelText: 'Addressline 1',
+                  ),
+                  validator: (val) {
+                    if (val == null || val.isEmpty) {
+                      return 'Please enter Addressline 1';
+                    }
+                  },
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 1.0),
-                ),
-                hintText: 'Addressline 1',
-                labelText: 'Addressline 1',
               ),
-              validator: (val) {
-                if (val == null || val.isEmpty) {
-                  return 'Please enter Address';
-                }
-              },
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(bottom: 6.0, left: 60, right: 60, top: 10),
-            child: TextFormField(
-              controller:
+              Padding(
+                padding: EdgeInsets.only(bottom: 6.0, left: 60, right: 60, top: 10),
+                child: TextFormField(
+                  controller:
                   createReq ? addressLine2Controller : pAddressLine2Controller,
-              decoration: new InputDecoration(
-                isDense: true,
-                contentPadding:
+                  decoration: new InputDecoration(
+                    isDense: true,
+                    contentPadding:
                     new EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(32.0)),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 1.0),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(32.0)),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black, width: 1.0),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black, width: 1.0),
+                    ),
+                    hintText: 'Addressline 2',
+                    labelText: 'Addressline 2',
+                  ),
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 1.0),
-                ),
-                hintText: 'Addressline 2',
-                labelText: 'Addressline 2',
               ),
-              validator: (val) {
-                if (val == null || val.isEmpty) {
-                  return 'Please enter Address';
-                }
-              },
-            ),
+              Padding(
+                  padding:
+                  EdgeInsets.only(bottom: 6.0, left: 60, right: 60, top: 10),
+                  child: DropdownButtonFormField(
+                    decoration: new InputDecoration(
+                        isDense: true,
+                        contentPadding: new EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 10.0),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(32.0)),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black, width: 1.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black, width: 1.0),
+                        ),
+                        labelText: "Country"),
+                    items: country.map<DropdownMenuItem<String>>((e) {
+                      return (DropdownMenuItem(
+                        child: Text(e.toString()),
+                        value: e,
+                      ));
+                    }).toList(),
+                    value: countryValue,
+                    onChanged: (value) {
+                      setState(() {
+                        if (createReq)
+                          countryValue = value.toString();
+                        else
+                          pCountryValue = value.toString();
+                      });
+                    },
+                  )),
+              Padding(
+                  padding:
+                  EdgeInsets.only(bottom: 6.0, left: 60, right: 60, top: 10),
+                  child: DropdownButtonFormField(
+                    decoration: new InputDecoration(
+                        isDense: true,
+                        contentPadding: new EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 10.0),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(32.0)),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black, width: 1.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black, width: 1.0),
+                        ),
+                        labelText: "State."),
+                    items: state.map<DropdownMenuItem<String>>((e) {
+                      return (DropdownMenuItem(
+                        child: Text(e.toString()),
+                        value: e,
+                      ));
+                    }).toList(),
+                    value: createReq ? stateValue : pStateValue,
+                    validator: (value) {
+                      if (value == null || value == 'select') {
+                        return 'Please select State';
+                      }
+                    },
+                    onChanged: (value) {
+                      setState(() {
+                        if (createReq)
+                          stateValue = value.toString();
+                        else
+                          pStateValue = value.toString();
+                      });
+                    },
+                  )),
+              Padding(
+                  padding:
+                  EdgeInsets.only(bottom: 6.0, left: 60, right: 60, top: 10),
+                  child: DropdownButtonFormField(
+                    decoration: new InputDecoration(
+                      isDense: true,
+                      contentPadding: new EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 10.0),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(32.0)),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                      ),
+                      labelText: "District",
+                    ),
+                    items: district.map<DropdownMenuItem<String>>((e) {
+                      return (DropdownMenuItem(
+                        child: Text(e.toString()),
+                        value: e,
+                      ));
+                    }).toList(),
+                    value: createReq ? districtValue : pDistrictValue,
+                    validator: (value) {
+                      if (value == null || value == 'select') {
+                        return 'Please select District ';
+                      }
+                    },
+                    onChanged: (value) {
+                      setState(() {
+                        if (createReq)
+                          districtValue = value.toString();
+                        else
+                          pDistrictValue = value.toString();
+                      });
+                    },
+                  )),
+              Padding(
+                  padding:
+                  EdgeInsets.only(bottom: 6.0, left: 60, right: 60, top: 10),
+                  child: DropdownButtonFormField(
+                    decoration: new InputDecoration(
+                      isDense: true,
+                      contentPadding: new EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 10.0),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(32.0)),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                      ),
+                      labelText: "Taluk",
+                    ),
+                    items: taluk.map<DropdownMenuItem<String>>((e) {
+                      return (DropdownMenuItem(
+                        child: Text(e.toString()),
+                        value: e,
+                      ));
+                    }).toList(),
+                    value: createReq ? talukValue : pTalukValue,
+                    validator: (value) {
+                      if (value == null || value == 'select') {
+                        return 'Please select Taluk ';
+                      }
+                    },
+                    onChanged: (value) {
+                      setState(() {
+                        if (createReq)
+                          talukValue = value.toString();
+                        else
+                          pTalukValue = value.toString();
+                      });
+                    },
+                  )),
+              Padding(
+                  padding:
+                  EdgeInsets.only(bottom: 6.0, left: 60, right: 60, top: 10),
+                  child: TextFormField(
+                    decoration: new InputDecoration(
+                      isDense: true,
+                      contentPadding: new EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 10.0),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(32.0)),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                      ),
+                      hintText: 'PinCode',
+                      labelText: 'PinCode',
+                    ),
+                    controller: createReq ? zipCodeController : pZipCodeController,
+                    validator: (val) {
+                      if (val == null || val.isEmpty) {
+                        return 'Please enter pincode';
+                      }
+                    },
+                  )),
+            ],
           ),
-          Padding(
-              padding:
-                  EdgeInsets.only(bottom: 6.0, left: 60, right: 60, top: 10),
-              child: DropdownButtonFormField(
-                decoration: new InputDecoration(
-                    isDense: true,
-                    contentPadding: new EdgeInsets.symmetric(
-                        vertical: 10.0, horizontal: 10.0),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(32.0)),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black, width: 1.0),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black, width: 1.0),
-                    ),
-                    labelText: "Country"),
-                items: country.map<DropdownMenuItem<String>>((e) {
-                  return (DropdownMenuItem(
-                    child: Text(e.toString()),
-                    value: e,
-                  ));
-                }).toList(),
-                value: countryValue,
-                onChanged: (value) {
-                  setState(() {
-                    if (createReq)
-                      countryValue = value.toString();
-                    else
-                      pCountryValue = value.toString();
-                  });
-                },
-              )),
-          Padding(
-              padding:
-                  EdgeInsets.only(bottom: 6.0, left: 60, right: 60, top: 10),
-              child: DropdownButtonFormField(
-                decoration: new InputDecoration(
-                    isDense: true,
-                    contentPadding: new EdgeInsets.symmetric(
-                        vertical: 10.0, horizontal: 10.0),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(32.0)),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black, width: 1.0),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black, width: 1.0),
-                    ),
-                    labelText: "State."),
-                items: state.map<DropdownMenuItem<String>>((e) {
-                  return (DropdownMenuItem(
-                    child: Text(e.toString()),
-                    value: e,
-                  ));
-                }).toList(),
-                value: createReq ? stateValue : pStateValue,
-                onChanged: (value) {
-                  setState(() {
-                    if (createReq)
-                      stateValue = value.toString();
-                    else
-                      pStateValue = value.toString();
-                  });
-                },
-              )),
-          Padding(
-              padding:
-                  EdgeInsets.only(bottom: 6.0, left: 60, right: 60, top: 10),
-              child: DropdownButtonFormField(
-                decoration: new InputDecoration(
-                  isDense: true,
-                  contentPadding: new EdgeInsets.symmetric(
-                      vertical: 10.0, horizontal: 10.0),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(32.0)),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black, width: 1.0),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black, width: 1.0),
-                  ),
-                  labelText: "District",
-                ),
-                items: district.map<DropdownMenuItem<String>>((e) {
-                  return (DropdownMenuItem(
-                    child: Text(e.toString()),
-                    value: e,
-                  ));
-                }).toList(),
-                value: createReq ? districtValue : pDistrictValue,
-                onChanged: (value) {
-                  setState(() {
-                    if (createReq)
-                      districtValue = value.toString();
-                    else
-                      pDistrictValue = value.toString();
-                  });
-                },
-              )),
-          Padding(
-              padding:
-                  EdgeInsets.only(bottom: 6.0, left: 60, right: 60, top: 10),
-              child: DropdownButtonFormField(
-                decoration: new InputDecoration(
-                  isDense: true,
-                  contentPadding: new EdgeInsets.symmetric(
-                      vertical: 10.0, horizontal: 10.0),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(32.0)),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black, width: 1.0),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black, width: 1.0),
-                  ),
-                  labelText: "Taluk",
-                ),
-                items: taluk.map<DropdownMenuItem<String>>((e) {
-                  return (DropdownMenuItem(
-                    child: Text(e.toString()),
-                    value: e,
-                  ));
-                }).toList(),
-                value: createReq ? talukValue : pTalukValue,
-                onChanged: (value) {
-                  setState(() {
-                    if (createReq)
-                      talukValue = value.toString();
-                    else
-                      pTalukValue = value.toString();
-                    print(talukValue);
-                  });
-                },
-              )),
-          Padding(
-              padding:
-                  EdgeInsets.only(bottom: 6.0, left: 60, right: 60, top: 10),
-              child: TextFormField(
-                decoration: new InputDecoration(
-                  isDense: true,
-                  contentPadding: new EdgeInsets.symmetric(
-                      vertical: 10.0, horizontal: 10.0),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(32.0)),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black, width: 1.0),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black, width: 1.0),
-                  ),
-                  hintText: 'PinCode',
-                  labelText: 'PinCode',
-                ),
-                controller: createReq ? zipCodeController : pZipCodeController,
-                validator: (val) {
-                  if (val == null || val.isEmpty) {
-                    return 'Please enter pincode';
-                  }
-                },
-              )),
-        ],
-      ),
-    )));
+        )));
   }
 
   populatePermanentAddress() {
@@ -915,21 +944,19 @@ class CreateStaffState extends State<CreateStaff> {
     pDistrictValue = districtValue;
     pTalukValue = talukValue;
   }
+
   void pickDate(BuildContext context) async {
     final initialDate = DateTime.now();
-    final newDate = await showDatePicker
-      (context: context,
+    final newDate = await showDatePicker(
+      context: context,
       initialDate: date,
       firstDate: DateTime(initialDate.year),
-      lastDate: DateTime(initialDate.year+5),
+      lastDate: DateTime(initialDate.year + 5),
     );
-    if(newDate == null)
-      return;
+    if (newDate == null) return;
     setState(() {
       date = newDate;
       dateController.value = TextEditingValue(text: getDate());
-
     });
   }
 }
-
