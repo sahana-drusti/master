@@ -28,7 +28,8 @@ class LoginAndRegisterationPageState extends State {
   bool login = true;
   bool signup = false;
   List<bool> isSelect = [true, false];
-  final _formKey = GlobalKey<FormState>();
+  final loginFormKey = GlobalKey<FormState>();
+  final regFormKey = GlobalKey<FormState>();
   List state = ["karnataka", "goa", "mp"];
   var stateValue = "karnataka";
   List district = ["hassan", "banglore"];
@@ -45,6 +46,8 @@ class LoginAndRegisterationPageState extends State {
   final rRegNoController = TextEditingController();
   final lEmailController = TextEditingController();
   final lPasswordController = TextEditingController();
+  bool userCreateSuccess = true;
+  bool usergetSuccess = true;
 
   @override
   Widget build(BuildContext context) {
@@ -87,11 +90,14 @@ class LoginAndRegisterationPageState extends State {
                 },
               ),
               Container(
+                child: this.usergetSuccess?Text('Error Fetching User',style: TextStyle(color: Colors.red),):Text(''),
+              ),
+              Container(
                   margin: EdgeInsetsDirectional.only(
                       start: 10.0, top: 150.0, end: 10.0),
                   alignment: Alignment.center,
                   child: Form(
-                      key: _formKey,
+                      key: loginFormKey,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -155,7 +161,7 @@ class LoginAndRegisterationPageState extends State {
                           ElevatedButton(
                             onPressed: () {
                               // Validate returns true if the form is valid, or false otherwise.
-                              if (_formKey.currentState!.validate()) {
+                              if (loginFormKey.currentState!.validate()) {
                                getUserAndValidate().then((value) =>
                                {
                                if(value){
@@ -217,10 +223,13 @@ class LoginAndRegisterationPageState extends State {
                 },
               ),
               Container(
+                child: this.userCreateSuccess?Text('Error Creating User',style: TextStyle(color: Colors.red),):Text(''),
+              ),
+              Container(
                   margin: EdgeInsetsDirectional.only(
                       top: 50.0, start: 10.0, end: 10.0),
                   child: Form(
-                      key: _formKey,
+                      key: regFormKey,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -376,7 +385,7 @@ class LoginAndRegisterationPageState extends State {
                               )),
                           ElevatedButton(
                             onPressed: () {
-                              if (_formKey.currentState!.validate()) {
+                              if (regFormKey.currentState!.validate()) {
                                 final response = createUser();
                                 Navigator.push(
                                   context,
@@ -411,6 +420,7 @@ class LoginAndRegisterationPageState extends State {
     );
     print(response);
     if (response.statusCode != 200) {
+      this.userCreateSuccess = false;
       throw Exception('error while creating user');
     }else{
       SharedPreferences localStorage = await SharedPreferences.getInstance();
@@ -424,7 +434,7 @@ class LoginAndRegisterationPageState extends State {
     bool isValidUser = false;
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     if(lEmailController.text.isNotEmpty) {
-      String url = "http://192.168.1.9:3000/users?email=" +
+      String url = "http://localhost:3000/users?email=" +
           lEmailController.text.toString();
       final response = await http.get(Uri.parse(url));
       if(response.statusCode == 200){
@@ -434,6 +444,9 @@ class LoginAndRegisterationPageState extends State {
           localStorage.setString("token", userId);
           isValidUser = true;
         }
+      }else{
+        this.usergetSuccess = false;
+        throw new Exception('Error fetching userId');
       }
     }
     return isValidUser;
