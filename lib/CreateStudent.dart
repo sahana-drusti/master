@@ -31,7 +31,7 @@ class CreateStudentState extends State<CreateStudent> {
   int val = 1;
   bool validPhoneNo = true;
   bool validEmail = true;
-  bool createSSuccess = false;
+  bool createSSuccess = true;
   bool validRegNo = true;
   bool address_Value = false;
   String radioItem = '';
@@ -139,7 +139,7 @@ class CreateStudentState extends State<CreateStudent> {
             child: SingleChildScrollView(
               child: Column(children: [
                 Container(
-                  child: !createSSuccess?Text(''):Text('Error creating student',style: TextStyle(color: Colors.red),),
+                  child: createSSuccess?Text(''):Text('Error creating student',style: TextStyle(color: Colors.red),),
                 ),
                 SizedBox(height: 150),
                 Container(
@@ -809,11 +809,9 @@ class CreateStudentState extends State<CreateStudent> {
                       onPressed: () {
                         setState(() {
                           createStudent().then((value) => {
-                            if(value){
+                            if(!value){
                               createSSuccess = false
-                            }else{
-                              createSSuccess = true
-                          }
+                            }
                           });
 
                         });
