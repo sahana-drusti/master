@@ -1,7 +1,10 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateStaff extends StatefulWidget {
   @override
@@ -11,13 +14,24 @@ class CreateStaff extends StatefulWidget {
 class CreateStaffState extends State<CreateStaff> {
   final _formKey = GlobalKey<FormState>();
   final _formKey1 = GlobalKey<FormState>();
+  TextEditingController regNumberCtrlr = TextEditingController();
+  TextEditingController firstNameCtrlr = TextEditingController();
+  TextEditingController middleNameCtrlr = TextEditingController();
+  TextEditingController classNameCtrlr = TextEditingController();
+  TextEditingController fatherNameCtrlr = TextEditingController();
+  TextEditingController fOccupationCtrlr = TextEditingController();
+  TextEditingController mOccupationCtrlr = TextEditingController();
+  TextEditingController motherNameCtrlr = TextEditingController();
+  TextEditingController phone1Ctrlr = TextEditingController();
+  TextEditingController phone2Ctrlr = TextEditingController();
+  TextEditingController email1Ctrlr = TextEditingController();
+  TextEditingController email2Ctrlr = TextEditingController();
+  String gender = "Male";
+
   int val = 1;
   bool validPhoneNo = true;
   bool validEmail = true;
-  bool validParentForm = false;
-  bool validBasicForm = false;
-  bool validContactForm = false;
-  bool validAddressForm = false;
+  bool createSStaff = true;
   bool validRegNo = true;
   bool address_Value = false;
   String radioItem = '';
@@ -101,12 +115,13 @@ class CreateStaffState extends State<CreateStaff> {
   TextEditingController pAddressLine1Controller = TextEditingController();
   TextEditingController pAddressLine2Controller = TextEditingController();
   TextEditingController pZipCodeController = TextEditingController();
-
+  TextEditingController lastNameCtrlr = TextEditingController();
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
         appBar: AppBar(
-          title: new Text("Create Staff"),
+          title: new Text("Create Student"),
           actions: <Widget>[
             IconButton(
                 icon: Icon(
@@ -114,82 +129,18 @@ class CreateStaffState extends State<CreateStaff> {
                   color: Colors.white,
                 ),
                 onPressed: () {
-                  Dialog errorDialog = Dialog(
-                    shape: RoundedRectangleBorder(
-                        borderRadius:
-                        BorderRadius.circular(12.0)), //this right here
-                    child: Container(
-                      height: 300.0,
-                      width: 600.0,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.all(15.0),
-                            child: Text(
-                              'Choose files to Upload',
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                                top: 10.0, bottom: 10.0, left: 60, right: 60),
-                            child: TextFormField(
-                              controller: addressLine2Controller,
-                              decoration: new InputDecoration(
-                                isDense: true,
-                                contentPadding: new EdgeInsets.symmetric(
-                                    vertical: 10.0, horizontal: 10.0),
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(32.0)),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.black, width: 1.0),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.black, width: 1.0),
-                                ),
-                                hintText: 'Choose file to Upload',
-                                labelText: 'Choose file to Upload',
-                              ),
-                              validator: (val) {
-                                if (val == null || val.isEmpty) {
-                                  return 'Please select a file';
-                                }
-                              },
-                            ),
-                          ),
-                          ElevatedButton(
-                              onPressed: () {},
-                              child: Text(
-                                'Browse!',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 18.0),
-                              )),
-                          ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text(
-                                'UPLOAD!',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 18.0),
-                              ))
-                        ],
-                      ),
-                    ),
-                  );
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) => errorDialog);
+                  showUploadPopUp();
                 })
           ],
         ),
-        body: Form(
+        body:
+        Form(
             key: _formKey,
             child: SingleChildScrollView(
               child: Column(children: [
+                Container(
+                  child: createSStaff?Text(''):Text('Error creating Staff',style: TextStyle(color: Colors.red),),
+                ),
                 SizedBox(height: 150),
                 Container(
                   decoration: BoxDecoration(
@@ -199,6 +150,7 @@ class CreateStaffState extends State<CreateStaff> {
                         width: 1,
                       )),
                   child: ExpansionTile(
+                    maintainState: true,
                     title: Text(
                       "Basic",
                       style: TextStyle(
@@ -211,15 +163,11 @@ class CreateStaffState extends State<CreateStaff> {
                       size: 36.0,
                     ),
                     children: <Widget>[
-                      Container(
-                        child: validBasicForm
-                            ? Text('Some fields are Missing')
-                            : Text(''),
-                      ),
                       Padding(
                           padding: EdgeInsets.only(
                               bottom: 6.0, left: 60, right: 60, top: 10),
                           child: TextFormField(
+                            controller: regNumberCtrlr,
                             onChanged: (value) {
                               RegExp exp = RegExp(r'^[a-zA-Z0-9]+$');
                               if (!exp.hasMatch(value)) {
@@ -274,6 +222,7 @@ class CreateStaffState extends State<CreateStaff> {
                               hintText: 'First Name',
                               labelText: "First name",
                             ),
+                            controller: firstNameCtrlr,
                             validator: (val) {
                               if (val == null || val.isEmpty) {
                                 return 'Please enter First Name';
@@ -300,6 +249,7 @@ class CreateStaffState extends State<CreateStaff> {
                               hintText: 'Middle Name',
                               labelText: "Middle Name",
                             ),
+                            controller: middleNameCtrlr,
                             validator: (val) {
                               if (val == null || val.isEmpty) {
                                 return 'Please enter Middle Name';
@@ -326,6 +276,7 @@ class CreateStaffState extends State<CreateStaff> {
                               hintText: 'Last Name',
                               labelText: "Last Name",
                             ),
+                            controller: lastNameCtrlr,
                             validator: (val) {
                               if (val == null || val.isEmpty) {
                                 return 'Please enter Last Name';
@@ -352,6 +303,7 @@ class CreateStaffState extends State<CreateStaff> {
                               hintText: 'Class',
                               labelText: "Class",
                             ),
+                            controller: classNameCtrlr,
                             validator: (val) {
                               if (val == null || val.isEmpty) {
                                 return 'Please enter Class';
@@ -397,11 +349,11 @@ class CreateStaffState extends State<CreateStaff> {
                       ListTile(
                         title: Text("Male"),
                         leading: Radio(
-                          value: 1,
-                          groupValue: val,
+                          value: "Male",
+                          groupValue: gender,
                           onChanged: (value) {
                             setState(() {
-                              val = 1;
+                              gender = value.toString();
                             });
                           },
                           activeColor: Colors.black,
@@ -410,30 +362,28 @@ class CreateStaffState extends State<CreateStaff> {
                       ListTile(
                         title: Text("Female"),
                         leading: Radio(
-                          value: 2,
-                          groupValue: val,
+                          value: "Female",
+                          groupValue: gender,
                           onChanged: (value) {
                             setState(() {
-                              val = 2;
+                              gender = value.toString();
                             });
                           },
                           activeColor: Colors.black,
                         ),
                       ),
-                      ElevatedButton(
-                        onPressed: () {
-                          if ((_formKey.currentState!.validate() || true)) {
-                            setState(() {
-                              validBasicForm = true;
-                            });
-                          }
-                        },
-                        child: Text('Save'),
-                      ),
                     ],
                   ),
                 ),
+                Container(
+                  decoration: BoxDecoration(
+                      color: Colors.black12,
+                      border: Border.all(
+                        color: Colors.black,
+                        width: 1,
+                      )),
 
+                ),
                 Container(
                   decoration: BoxDecoration(
                       color: Colors.black12,
@@ -442,6 +392,7 @@ class CreateStaffState extends State<CreateStaff> {
                         width: 1,
                       )),
                   child: ExpansionTile(
+                      maintainState: true,
                       title: Text(
                         'Contact',
                         style: TextStyle(
@@ -454,11 +405,6 @@ class CreateStaffState extends State<CreateStaff> {
                         size: 36.0,
                       ),
                       children: <Widget>[
-                        Container(
-                          child: validContactForm
-                              ? Text('Some fields are Missing')
-                              : Text(''),
-                        ),
                         Padding(
                             padding: EdgeInsets.only(
                                 bottom: 6.0, left: 60, right: 60, top: 10),
@@ -490,6 +436,7 @@ class CreateStaffState extends State<CreateStaff> {
                                   ),
                                   hintText: 'Phone Number ',
                                   labelText: "Phone Number"),
+                              controller: phone1Ctrlr,
                               validator: (val) {
                                 if (val == null || val.isEmpty) {
                                   return 'Please enter Phone number';
@@ -499,37 +446,40 @@ class CreateStaffState extends State<CreateStaff> {
                               },
                             )),
                         Padding(
-                            padding: EdgeInsets.only(
-                                bottom: 6.0, left: 60, right: 60, top: 10),
-                            child: TextFormField(
-                              onChanged: (value) {
-                                RegExp exp =
-                                RegExp(r'(^(?:[+0]9)?[0-9]{10,12}$)');
-                                if (!exp.hasMatch(value)) {
-                                  setState(() {
-                                    validPhoneNo = false;
-                                  });
-                                } else {
-                                  setState(() {
-                                    validPhoneNo = true;
-                                  });
-                                }
-                              },
-                              decoration: new InputDecoration(
-                                  isDense: true,
-                                  contentPadding: new EdgeInsets.symmetric(
-                                      vertical: 10.0, horizontal: 10.0),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Colors.black, width: 1.0),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Colors.black, width: 1.0),
-                                  ),
-                                  hintText: 'Phone Number-2',
-                                  labelText: "Phone Number-2"),
-                            )),
+                          padding: EdgeInsets.only(
+                              bottom: 6.0, left: 60, right: 60, top: 10),
+                          child: TextFormField(
+                            onChanged: (value) {
+                              RegExp exp =
+                              RegExp(r'(^(?:[+0]9)?[0-9]{10,12}$)');
+                              if (!exp.hasMatch(value)) {
+                                setState(() {
+                                  validPhoneNo = false;
+                                });
+                              } else {
+                                setState(() {
+                                  validPhoneNo = true;
+                                });
+                              }
+                            },
+                            decoration: new InputDecoration(
+                                isDense: true,
+                                contentPadding: new EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 10.0),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.black, width: 1.0),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.black, width: 1.0),
+                                ),
+                                hintText: 'Phone Number-2',
+                                labelText: "Phone Number-2"),
+                            controller: phone2Ctrlr,
+                          ),
+
+                        ),
                         Padding(
                             padding: EdgeInsets.only(
                                 bottom: 6.0, left: 60, right: 60, top: 10),
@@ -548,6 +498,7 @@ class CreateStaffState extends State<CreateStaff> {
                                   ),
                                   hintText: 'E-Mail Address',
                                   labelText: "E-mail."),
+                              controller: email1Ctrlr,
                               validator: (val) {
                                 if (val == null || val.isEmpty) {
                                   return 'Please enter Email';
@@ -564,33 +515,25 @@ class CreateStaffState extends State<CreateStaff> {
                               },
                             )),
                         Padding(
-                            padding: EdgeInsets.only(
-                                bottom: 6.0, left: 60, right: 60, top: 10),
-                            child: TextFormField(
-                              decoration: new InputDecoration(
-                                  isDense: true,
-                                  contentPadding: new EdgeInsets.symmetric(
-                                      vertical: 10.0, horizontal: 10.0),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Colors.black, width: 1.0),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Colors.black, width: 1.0),
-                                  ),
-                                  hintText: 'E-Mail Address 2',
-                                  labelText: "E-mail 2."),
-                            )),
-                        ElevatedButton(
-                          onPressed: () {
-                            if ((_formKey.currentState!.validate() || true)) {
-                              setState(() {
-                                validContactForm = true;
-                              });
-                            }
-                          },
-                          child: Text('Save'),
+                          padding: EdgeInsets.only(
+                              bottom: 6.0, left: 60, right: 60, top: 10),
+                          child: TextFormField(
+                            decoration: new InputDecoration(
+                                isDense: true,
+                                contentPadding: new EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 10.0),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.black, width: 1.0),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.black, width: 1.0),
+                                ),
+                                hintText: 'E-Mail Address 2',
+                                labelText: "E-mail 2."),
+                            controller: email2Ctrlr,
+                          ),
                         ),
                       ]),
                 ),
@@ -602,6 +545,7 @@ class CreateStaffState extends State<CreateStaff> {
                         width: 1,
                       )),
                   child: ExpansionTile(
+                      maintainState: true,
                       title: Text(
                         'Address',
                         style: TextStyle(
@@ -614,11 +558,6 @@ class CreateStaffState extends State<CreateStaff> {
                         size: 36.0,
                       ),
                       children: <Widget>[
-                        Container(
-                          child: validAddressForm
-                              ? Text('Some fields are Missing')
-                              : Text(''),
-                        ),
                         ListTile(
                           title: Text("Current"),
                           leading: Radio(
@@ -666,16 +605,6 @@ class CreateStaffState extends State<CreateStaff> {
                               ? createAddressForm(true)
                               : createAddressForm(false),
                         ),
-                        ElevatedButton(
-                          onPressed: () {
-                            if ((_formKey1.currentState!.validate() || true)) {
-                              setState(() {
-                                validAddressForm = true;
-                              });
-                            }
-                          },
-                          child: Text('Save'),
-                        ),
                       ]),
                 ),
                 Row(
@@ -688,7 +617,13 @@ class CreateStaffState extends State<CreateStaff> {
                       child: Text('Back'),
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        setState(() {
+                          createStaff();
+
+                        });
+
+                      },
                       child: Text('Submit'),
                     ),
                   ],
@@ -950,7 +885,7 @@ class CreateStaffState extends State<CreateStaff> {
     final newDate = await showDatePicker(
       context: context,
       initialDate: date,
-      firstDate: DateTime(initialDate.year),
+      firstDate: DateTime(initialDate.year-30),
       lastDate: DateTime(initialDate.year + 5),
     );
     if (newDate == null) return;
@@ -959,4 +894,123 @@ class CreateStaffState extends State<CreateStaff> {
       dateController.value = TextEditingValue(text: getDate());
     });
   }
+
+  Future<void> createStaff() async {
+    bool createSuccess = true;
+    String url = "http://localhost:3000/faculty/";
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    final response = await http.post(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        "firstName": firstNameCtrlr.text.toString(),
+        "lastName": lastNameCtrlr.text.toString(),
+        "middleName": middleNameCtrlr.text.toString(),
+        "dob": dateController.text.toString(),
+        "gender": gender,
+        "class": classNameCtrlr.text.toString(),
+        "userId": localStorage.getString('token')!,
+        "religion": religionValue,
+        "phone1": phone1Ctrlr.text.toString(),
+        "phone2": phone2Ctrlr.text.toString(),
+        "email1":email1Ctrlr.text.toString(),
+        "email2": email2Ctrlr.text.toString(),
+        "addressLine1": addressLine1Controller.text.toString(),
+        "addressLine2": addressLine2Controller.text.toString(),
+        "taluk":talukValue,
+        "district":districtValue,
+        "state": stateValue,
+        "country": countryValue,
+        "zipCode": zipCodeController.text.toString(),
+        "pAddressLine1": pAddressLine1Controller.text.toString(),
+        "pAddressLine2": pAddressLine2Controller.text.toString(),
+        "pTaluk":pTalukValue,
+        "pDistrict":pDistrictValue,
+        "pState": pStateValue,
+        "pCountry": pCountryValue,
+        "pZipCode": pZipCodeController.text.toString(),
+
+      }),
+    );
+    if(response.statusCode != 200){
+      createSStaff = false;
+      throw Exception("error creating Student");
+    }
+  }
+
+  Widget showUploadPopUp() {
+    Dialog errorDialog = Dialog(
+      shape: RoundedRectangleBorder(
+          borderRadius:
+          BorderRadius.circular(12.0)), //this right here
+      child: Container(
+        height: 300.0,
+        width: 600.0,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.all(15.0),
+              child: Text(
+                'Choose files to Upload',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(
+                  top: 10.0, bottom: 10.0, left: 60, right: 60),
+              child: TextFormField(
+                controller: addressLine2Controller,
+                decoration: new InputDecoration(
+                  isDense: true,
+                  contentPadding: new EdgeInsets.symmetric(
+                      vertical: 10.0, horizontal: 10.0),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(32.0)),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Colors.black, width: 1.0),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Colors.black, width: 1.0),
+                  ),
+                  hintText: 'Choose file to Upload',
+                  labelText: 'Choose file to Upload',
+                ),
+                validator: (val) {
+                  if (val == null || val.isEmpty) {
+                    return 'Please select a file';
+                  }
+                },
+              ),
+            ),
+            ElevatedButton(
+                onPressed: () {},
+                child: Text(
+                  'Browse!',
+                  style: TextStyle(
+                      color: Colors.white, fontSize: 18.0),
+                )),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  'UPLOAD!',
+                  style: TextStyle(
+                      color: Colors.white, fontSize: 18.0),
+                ))
+          ],
+        ),
+      ),
+    );
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => errorDialog);
+    return errorDialog;
+  }
+
 }
