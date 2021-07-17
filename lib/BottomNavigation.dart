@@ -95,7 +95,7 @@ class BottomNavigationState extends State {
             backgroundColor: Colors.black,
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.notifications),
+              icon: Icon(Icons.search),
               label: 'notification',
               backgroundColor: Colors.black),
           BottomNavigationBarItem(
