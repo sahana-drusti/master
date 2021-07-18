@@ -40,7 +40,8 @@ class AnnouncementState extends State {
           title: new Text("Announcement"),
         ),
         body:SingleChildScrollView(child: Center(
-            child: Column(children: [
+            child: Column(
+                children: [
           ElevatedButton(
             onPressed: () {
               showDialogBox(createAnnoncementForm(true));
@@ -71,34 +72,15 @@ class AnnouncementState extends State {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
-                      Container(
-                        margin: EdgeInsets.only(left: 160.0),
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.edit,
-                          ),
-                          onPressed: () {
-
-                          },
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(right: 10.0),
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.delete,
-                          ),
-                          onPressed: () {
-
-                          },
-                        ),
-                      )
                     ],
                   ),
                 ),
+
                 Divider(
                   color: Colors.black54,
                 ),
+                Scrollbar(
+                  child:
                 Container(
                   height: 350,
                   width: 400,
@@ -107,35 +89,34 @@ class AnnouncementState extends State {
                       border: Border.all(
                         color: Colors.black,
                         width: 1,
-                      )),
-                  child: NestedScrollView(headerSliverBuilder:
-                      (BuildContext context, bool innerBoxIsScrolled) {
-                    return <Widget>[
-                      SliverOverlapAbsorber(
-                        handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
-                            context),
 
-                      )
-                    ];
-                  }, body: Builder(builder: (BuildContext context) {
-                    return CustomScrollView(
-                      slivers: <Widget>[
-                        SliverOverlapInjector(
-                            handle:
-                                NestedScrollView.sliverOverlapAbsorberHandleFor(
-                                    context)),
-                        SliverFixedExtentList(
-                          itemExtent: 48.0,
-                          delegate: SliverChildBuilderDelegate(
-                            (BuildContext context, int index) =>
-                                ListTile(title: Text('Item $index')),
-                            childCount: 30,
-                          ),
+                      )),
+                  child:ListView.builder(
+                    itemBuilder: (BuildContext context, int index) {
+                      return Center(
+                        child: Container(
+                          height:80,
+                            width:350,
+                            decoration: BoxDecoration(
+                                color: Colors.grey,
+                                border: Border.all(
+                                  color: Colors.black,
+                                  width: 1,
+
+                                )),
+                          child: Container(
+                            child: Text('item $index')
+                          )
                         ),
-                      ],
-                    );
-                  })),
-                )
+                      );
+                    },
+                  ),
+
+                ),
+                ),
+
+
+
               ],
             ),
           )
@@ -277,7 +258,7 @@ class AnnouncementState extends State {
                           child: IconButton(
                             icon: const Icon(Icons.calendar_today),
                             onPressed: () {
-                              pickDate(context);
+                              pickDate(context,true);
                             },
                           ), // icon is 48px widget.
                         ),
@@ -314,7 +295,7 @@ class AnnouncementState extends State {
                           child: IconButton(
                             icon: const Icon(Icons.calendar_today),
                             onPressed: () {
-                              pickDate2(context);
+                              pickDate(context, false);
                             },
                           ), // icon is 48px widget.
                         ),
@@ -417,7 +398,7 @@ class AnnouncementState extends State {
       ),
     )));
   }
-  void pickDate(BuildContext context) async {
+  void pickDate(BuildContext context, bool startDate) async {
     final initialDate = DateTime.now();
     final newDate = await showDatePicker(
       context: context,
@@ -428,23 +409,13 @@ class AnnouncementState extends State {
     if (newDate == null) return;
     setState(() {
       date = newDate;
-      dateController.value = TextEditingValue(text: getDate());
+      if(startDate)
+        dateController.value = TextEditingValue(text: getDate());
+      else
+        dateController2.value = TextEditingValue(text: getDate());
 
     });
   }
-  void pickDate2(BuildContext context) async {
-    final initialDate = DateTime.now();
-    final newDate = await showDatePicker(
-      context: context,
-      initialDate: date,
-      firstDate: DateTime(initialDate.year),
-      lastDate: DateTime(initialDate.year + 5),
-    );
-    if (newDate == null) return;
-    setState(() {
-      date = newDate;
-      dateController2.value = TextEditingValue(text: getDate());
 
-    });
-  }
+
 }
