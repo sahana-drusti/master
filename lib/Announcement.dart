@@ -196,8 +196,8 @@ class AnnouncementState extends State {
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.black, width: 1.0),
                         ),
-                        hintText: 'Discription',
-                        labelText: 'Discription',
+                        hintText: 'Description',
+                        labelText: 'Description',
                       ),
                       validator: (val) {
                         if (val == null || val.isEmpty) {
@@ -370,11 +370,7 @@ class AnnouncementState extends State {
                         hintText: 'Attachment',
                         labelText: 'Attachment',
                       ),
-                      validator: (val) {
-                        if (val == null || val.isEmpty) {
-                          return 'Please enter Description';
-                        }
-                      },
+
                     ),
                   ),
                   Row(
