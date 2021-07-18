@@ -434,7 +434,7 @@ class LoginAndRegisterationPageState extends State {
     bool isValidUser = false;
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     if(lEmailController.text.isNotEmpty) {
-      String url = "http://localhost:3000/users?email=" +
+      String url = "http://192.168.1.8:3000/users?email=" +
           lEmailController.text.toString();
       final response = await http.get(Uri.parse(url));
       if(response.statusCode == 200){

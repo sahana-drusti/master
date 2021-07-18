@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:email_validator/email_validator.dart';
+
 import 'package:table_calendar/table_calendar.dart';
 
 class CreateStaff extends StatefulWidget {
@@ -531,38 +531,46 @@ class CreateStaffState extends State<CreateStaff> {
                                   labelText: "Phone Number-2"),
                             )),
                         Padding(
-                            padding: EdgeInsets.only(
-                                bottom: 6.0, left: 60, right: 60, top: 10),
-                            child: TextFormField(
-                              decoration: new InputDecoration(
-                                  isDense: true,
-                                  contentPadding: new EdgeInsets.symmetric(
-                                      vertical: 10.0, horizontal: 10.0),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Colors.black, width: 1.0),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Colors.black, width: 1.0),
-                                  ),
-                                  hintText: 'E-Mail Address',
-                                  labelText: "E-mail."),
-                              validator: (val) {
-                                if (val == null || val.isEmpty) {
-                                  return 'Please enter Email';
-                                }
-                              },
-                              onChanged: (value) => {
+                          padding: EdgeInsets.only(
+                              bottom: 6.0, left: 60, right: 60, top: 10),
+                          child: TextFormField(
+                            onChanged: (value) {
+                              RegExp exp =
+                              RegExp(  r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
+                              if (!exp.hasMatch(value)) {
                                 setState(() {
-                                  if (EmailValidator.validate(value)) {
-                                    validEmail = true;
-                                  } else {
-                                    validEmail = false;
-                                  }
-                                }),
-                              },
-                            )),
+                                  validEmail = false;
+                                });
+                              } else {
+                                setState(() {
+                                  validEmail = true;
+                                });
+                              }
+                            },
+                            decoration: new InputDecoration(
+                                isDense: true,
+                                contentPadding: new EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 10.0),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.black, width: 1.0),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.black, width: 1.0),
+                                ),
+                                hintText: 'Email ',
+                                labelText: "Email"),
+                            validator: (val) {
+                              if (val == null || val.isEmpty) {
+                                return 'Please enter Email';
+                              } else if (!validEmail) {
+                                return 'Please enter valid E-Mail id';
+                              }
+                            },
+                          ),
+
+                        ),
                         Padding(
                             padding: EdgeInsets.only(
                                 bottom: 6.0, left: 60, right: 60, top: 10),

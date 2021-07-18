@@ -125,7 +125,7 @@ class HomeState extends State {
               },
               icon: Icon(
                 Icons.add_circle_outline_sharp,
-                size: 64.0,
+
               ),
               alignment: Alignment.center,
             ),
