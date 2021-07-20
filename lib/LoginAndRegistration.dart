@@ -90,7 +90,7 @@ class LoginAndRegisterationPageState extends State {
                 },
               ),
               Container(
-                child: this.usergetSuccess?Text('Error Fetching User',style: TextStyle(color: Colors.red),):Text(''),
+                child: this.usergetSuccess?Text(''):Text('Error Fetching User',style: TextStyle(color: Colors.red),),
               ),
               Container(
                   margin: EdgeInsetsDirectional.only(
@@ -223,7 +223,7 @@ class LoginAndRegisterationPageState extends State {
                 },
               ),
               Container(
-                child: this.userCreateSuccess?Text('Error Creating User',style: TextStyle(color: Colors.red),):Text(''),
+                child: this.userCreateSuccess?Text(''):Text('Error Creating User',style: TextStyle(color: Colors.red),),
               ),
               Container(
                   margin: EdgeInsetsDirectional.only(

@@ -1108,7 +1108,7 @@ class CreateStudentState extends State<CreateStudent> {
         "firstName": firstNameCtrlr.text.toString(),
         "lastName": lastNameCtrlr.text.toString(),
         "middleName": middleNameCtrlr.text.toString(),
-        "DOB": dateController.text.toString(),
+        "dob": dateController.text.toString(),
         "gender": gender,
         "class": classNameCtrlr.text.toString(),
         "userId": localStorage.getString('token')!,
