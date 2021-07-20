@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,6 +19,10 @@ class MyProfileStateWidget extends StatefulWidget {
 
 class MyProfileState extends State {
   var selectedIndex = 0;
+  bool validPhoneNo = true;
+  bool validEmail = true;
+  bool validPhoneNo2 = true;
+  bool validEmail2 = true;
   final _formKey = GlobalKey<FormState>();
   List country = ["India"];
   var countryValue = "India";
@@ -54,14 +57,14 @@ class MyProfileState extends State {
       ),
       body: SingleChildScrollView(
           child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          createContainer(profileDetails(), 150.0),
-          createContainer(addressContainer(), 200.0),
-          createContainer(updatePassword(), 80.0),
-          createContainer(updateContact(), 80.0),
-        ],
-      )),
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              createContainer(profileDetails(), 150.0),
+              createContainer(addressContainer(), 200.0),
+              createContainer(updatePassword(), 80.0),
+              createContainer(updateContact(), 80.0),
+            ],
+          )),
     ));
   }
 
@@ -173,7 +176,7 @@ class MyProfileState extends State {
       }
     });
     return isAvail;
-      }
+  }
 
   editIcon() {
     return (IconButton(onPressed: () {showDialogBox(createAddressForm(false));}, icon: Icon(Icons.edit)));
@@ -201,7 +204,9 @@ class MyProfileState extends State {
         Container(
             margin: EdgeInsets.only(left: 200.0),
             child: IconButton(
-              onPressed: () {},
+              onPressed: () {
+                showDialogBox(createContactForm(true));
+              },
               icon: Icon(Icons.edit),
             ))
       ],
@@ -213,7 +218,7 @@ class MyProfileState extends State {
         context: context,
         barrierDismissible: true,
         barrierLabel:
-            MaterialLocalizations.of(context).modalBarrierDismissLabel,
+        MaterialLocalizations.of(context).modalBarrierDismissLabel,
         barrierColor: Colors.black45,
         //transitionDuration: const Duration(milliseconds: 200),
 
@@ -221,12 +226,12 @@ class MyProfileState extends State {
             Animation secondaryAnimation) {
           return Center(
               child: Container(
-            width: MediaQuery.of(context).size.width - 10,
-            height: MediaQuery.of(context).size.height - 90,
-            padding: EdgeInsets.all(20),
-            color: Colors.white,
-            child: form,
-          ));
+                width: MediaQuery.of(context).size.width - 10,
+                height: MediaQuery.of(context).size.height - 90,
+                padding: EdgeInsets.all(20),
+                color: Colors.white,
+                child: form,
+              ));
         });
   }
 
@@ -235,250 +240,251 @@ class MyProfileState extends State {
         body: SingleChildScrollView(
             child: Center(
                 child: Form(
-      key: _formKey,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Divider(
-            color: Colors.black,
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: 30.0, bottom: 10.0),
-            child: TextFormField(
-              controller: addressLine1Controller,
-              decoration: new InputDecoration(
-                isDense: true,
-                contentPadding:
-                    new EdgeInsets.symmetric(vertical: 10.0, horizontal: 0.0),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(32.0)),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 1.0),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 1.0),
-                ),
-                hintText: 'Addressline 1',
-                labelText: 'Addressline 1',
-              ),
-              validator: (val) {
-                if (val == null || val.isEmpty) {
-                  return 'Please enter Address';
-                }
-              },
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-            child: TextFormField(
-              controller: addressLine2Controller,
-              decoration: new InputDecoration(
-                isDense: true,
-                contentPadding:
-                    new EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(32.0)),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 1.0),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 1.0),
-                ),
-                hintText: 'Addressline 2',
-                labelText: 'Addressline 2',
-              ),
-              validator: (val) {
-                if (val == null || val.isEmpty) {
-                  return 'Please enter Address';
-                }
-              },
-            ),
-          ),
-          Padding(
-              padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
-              child: DropdownButtonFormField(
-                decoration: new InputDecoration(
-                    isDense: true,
-                    contentPadding: new EdgeInsets.symmetric(
-                        vertical: 10.0, horizontal: 10.0),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(32.0)),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black, width: 1.0),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black, width: 1.0),
-                    ),
-                    labelText: "Country"),
-                items: country.map<DropdownMenuItem<String>>((e) {
-                  return (DropdownMenuItem(
-                    child: Text(e.toString()),
-                    value: e,
-                  ));
-                }).toList(),
-                value: countryValue,
-                onChanged: (value) {
-                  setState(() {
-                    countryValue = value.toString();
-                  });
-                },
-              )),
-          Padding(
-              padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
-              child: DropdownButtonFormField(
-                decoration: new InputDecoration(
-                    isDense: true,
-                    contentPadding: new EdgeInsets.symmetric(
-                        vertical: 10.0, horizontal: 10.0),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(32.0)),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black, width: 1.0),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black, width: 1.0),
-                    ),
-                    labelText: "State."),
-                items: state.map<DropdownMenuItem<String>>((e) {
-                  return (DropdownMenuItem(
-                    child: Text(e.toString()),
-                    value: e,
-                  ));
-                }).toList(),
-                value: state[0],
-                onChanged: (value) {
-                  setState(() {
-                    stateValue = value.toString();
-                  });
-                },
-              )),
-          Padding(
-              padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
-              child: DropdownButtonFormField(
-                decoration: new InputDecoration(
-                  isDense: true,
-                  contentPadding: new EdgeInsets.symmetric(
-                      vertical: 10.0, horizontal: 10.0),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(32.0)),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black, width: 1.0),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black, width: 1.0),
-                  ),
-                  labelText: "District",
-                ),
-                items: district.map<DropdownMenuItem<String>>((e) {
-                  return (DropdownMenuItem(
-                    child: Text(e.toString()),
-                    value: e,
-                  ));
-                }).toList(),
-                value: district[0],
-                onChanged: (value) {
-                  setState(() {
-                    districtValue = value.toString();
-                  });
-                },
-              )),
-          Padding(
-              padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
-              child: DropdownButtonFormField(
-                decoration: new InputDecoration(
-                  isDense: true,
-                  contentPadding: new EdgeInsets.symmetric(
-                      vertical: 10.0, horizontal: 10.0),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(32.0)),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black, width: 1.0),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black, width: 1.0),
-                  ),
-                  labelText: "Taluk",
-                ),
-                items: taluk.map<DropdownMenuItem<String>>((e) {
-                  return (DropdownMenuItem(
-                    child: Text(e.toString()),
-                    value: e,
-                  ));
-                }).toList(),
-                value: taluk[0],
-                onChanged: (value) {
-                  setState(() {
-                    talukValue = value.toString();
-                    print(talukValue);
-                  });
-                },
-              )),
-          Padding(
-              padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
-              child: TextFormField(
-                decoration: new InputDecoration(
-                  isDense: true,
-                  contentPadding: new EdgeInsets.symmetric(
-                      vertical: 10.0, horizontal: 10.0),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(32.0)),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black, width: 1.0),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black, width: 1.0),
-                  ),
-                  hintText: 'PinCode',
-                  labelText: 'PinCode',
-                ),
-                controller: zipCodeController,
-                validator: (val) {
-                  if (val == null || val.isEmpty) {
-                    return 'Please enter pincode';
-                  }
-                },
-              )),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  returnBack();
-                },
-                child: Text(
-                  "Back",
-                  style: TextStyle(color: Colors.black),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate())
-                    {
-                      print(createReq);
-                      if(createReq){
-                        setState(() {
-                          final response = createAddress().then((value) => returnBack());
-                        });
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Divider(
+                        color: Colors.black,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 30.0, bottom: 10.0),
+                        child: TextFormField(
+                          controller: addressLine1Controller,
+                          decoration: new InputDecoration(
+                            isDense: true,
+                            contentPadding:
+                            new EdgeInsets.symmetric(vertical: 10.0, horizontal: 0.0),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(32.0)),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black, width: 1.0),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black, width: 1.0),
+                            ),
+                            hintText: 'Addressline 1',
+                            labelText: 'Addressline 1',
+                          ),
+                          validator: (val) {
+                            if (val == null || val.isEmpty) {
+                              return 'Please enter Address';
+                            }
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                        child: TextFormField(
+                          controller: addressLine2Controller,
+                          decoration: new InputDecoration(
+                            isDense: true,
+                            contentPadding:
+                            new EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(32.0)),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black, width: 1.0),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black, width: 1.0),
+                            ),
+                            hintText: 'Addressline 2',
+                            labelText: 'Addressline 2',
+                          ),
+                          validator: (val) {
+                            if (val == null || val.isEmpty) {
+                              return 'Please enter Address';
+                            }
+                          },
+                        ),
+                      ),
+                      Padding(
+                          padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
+                          child: DropdownButtonFormField(
+                            decoration: new InputDecoration(
+                                isDense: true,
+                                contentPadding: new EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 10.0),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(32.0)),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.black, width: 1.0),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.black, width: 1.0),
+                                ),
+                                labelText: "Country"),
+                            items: country.map<DropdownMenuItem<String>>((e) {
+                              return (DropdownMenuItem(
+                                child: Text(e.toString()),
+                                value: e,
+                              ));
+                            }).toList(),
+                            value: countryValue,
+                            onChanged: (value) {
+                              setState(() {
+                                countryValue = value.toString();
+                              });
+                            },
+                          )),
+                      Padding(
+                          padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
+                          child: DropdownButtonFormField(
+                            decoration: new InputDecoration(
+                                isDense: true,
+                                contentPadding: new EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 10.0),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(32.0)),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.black, width: 1.0),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.black, width: 1.0),
+                                ),
+                                labelText: "State."),
+                            items: state.map<DropdownMenuItem<String>>((e) {
+                              return (DropdownMenuItem(
+                                child: Text(e.toString()),
+                                value: e,
+                              ));
+                            }).toList(),
+                            value: state[0],
+                            onChanged: (value) {
+                              setState(() {
+                                stateValue = value.toString();
+                              });
+                            },
+                          )),
+                      Padding(
+                          padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
+                          child: DropdownButtonFormField(
+                            decoration: new InputDecoration(
+                              isDense: true,
+                              contentPadding: new EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 10.0),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(32.0)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black, width: 1.0),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black, width: 1.0),
+                              ),
+                              labelText: "District",
+                            ),
+                            items: district.map<DropdownMenuItem<String>>((e) {
+                              return (DropdownMenuItem(
+                                child: Text(e.toString()),
+                                value: e,
+                              ));
+                            }).toList(),
+                            value: district[0],
+                            onChanged: (value) {
+                              setState(() {
+                                districtValue = value.toString();
+                              });
+                            },
+                          )),
+                      Padding(
+                          padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
+                          child: DropdownButtonFormField(
+                            decoration: new InputDecoration(
+                              isDense: true,
+                              contentPadding: new EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 10.0),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(32.0)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black, width: 1.0),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black, width: 1.0),
+                              ),
+                              labelText: "Taluk",
+                            ),
+                            items: taluk.map<DropdownMenuItem<String>>((e) {
+                              return (DropdownMenuItem(
+                                child: Text(e.toString()),
+                                value: e,
+                              ));
+                            }).toList(),
+                            value: taluk[0],
+                            onChanged: (value) {
+                              setState(() {
+                                talukValue = value.toString();
+                                print(talukValue);
+                              });
+                            },
+                          )),
+                      Padding(
+                          padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
+                          child: TextFormField(
+                            decoration: new InputDecoration(
+                              isDense: true,
+                              contentPadding: new EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 10.0),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(32.0)),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black, width: 1.0),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black, width: 1.0),
+                              ),
+                              hintText: 'PinCode',
+                              labelText: 'PinCode',
+                            ),
+                            controller: zipCodeController,
+                            validator: (val) {
+                              if (val == null || val.isEmpty) {
+                                return 'Please enter pincode';
+                              }
+                            },
+                          )),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              returnBack();
+                            },
+                            child: Text(
+                              "Back",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              if (_formKey.currentState!.validate())
+                              {
+                                print(createReq);
+                                if(createReq){
+                                  setState(() {
+                                    final response = createAddress().then((value) => returnBack());
+                                  });
 
-                      }else{
-                        setState(() {
-                          final response = updateAddress().then((value) => returnBack());
-                        });
+                                }else{
+                                  setState(() {
+                                    final response = updateAddress().then((value) => returnBack());
+                                  });
 
-                      }
-                    }
-                },
-                child: Text(
-                  "Save",
-                  style: TextStyle(color: Colors.black),
-                ),
-              )
-            ],
-          ),
-        ],
-      ),
-    )))));
+                                }
+                              }
+                            },
+                            child: Text(
+                              "Save",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                )))));
   }
+
 
   Widget createPasswordResetForm() {
     return (Scaffold(
@@ -553,8 +559,8 @@ class MyProfileState extends State {
                                     setState(() {
                                       final response = updateUserPassword().then((value) => returnBack());
                                     });
-                                        }
-                                     // Validate returns true if the form is valid, or false otherwise.
+                                  }
+                                  // Validate returns true if the form is valid, or false otherwise.
                                 },
                                 child: Text('Submit'),
                               ),
@@ -568,11 +574,210 @@ class MyProfileState extends State {
     )
     );
   }
+  Widget createContactForm(bool createReq) {
+    return (Scaffold(
+        body: SingleChildScrollView(
+            child: Center(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: 100,
+                      ),
+
+
+                      Padding(
+                          padding: EdgeInsets.only(
+                              bottom: 6.0, left: 60, right: 60, top: 10),
+                          child: TextFormField(
+                            onChanged: (value) {
+                              RegExp exp =
+                              RegExp(r'(^(?:[+0]9)?[0-9]{10,12}$)');
+                              if (!exp.hasMatch(value)) {
+                                setState(() {
+                                  validPhoneNo = false;
+                                });
+                              } else {
+                                setState(() {
+                                  validPhoneNo = true;
+                                });
+                              }
+                            },
+                            decoration: new InputDecoration(
+                                isDense: true,
+                                contentPadding: new EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 10.0),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.black, width: 1.0),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.black, width: 1.0),
+                                ),
+                                hintText: 'Phone Number ',
+                                labelText: "Phone Number"),
+
+                            validator: (val) {
+                              if (val == null || val.isEmpty) {
+                                return 'Please enter Phone number';
+                              } else if (!validPhoneNo) {
+                                return 'Please enter valid Phone number';
+                              }
+                            },
+                          )),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            bottom: 6.0, left: 60, right: 60, top: 10),
+                        child: TextFormField(
+                          onChanged: (value) {
+                            RegExp exp =
+                            RegExp(r'(^(?:[+0]9)?[0-9]{10,12}$)');
+                            if (!exp.hasMatch(value)) {
+                              setState(() {
+                                validPhoneNo2 = false;
+                              });
+                            } else {
+                              setState(() {
+                                validPhoneNo2 = true;
+                              });
+                            }
+                          },
+                          decoration: new InputDecoration(
+                              isDense: true,
+                              contentPadding: new EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 10.0),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors.black, width: 1.0),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors.black, width: 1.0),
+                              ),
+                              hintText: 'Phone Number-2',
+                              labelText: "Phone Number-2"),
+
+                        ),
+
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            bottom: 6.0, left: 60, right: 60, top: 10),
+                        child: TextFormField(
+                          onChanged: (value) {
+                            RegExp exp =
+                            RegExp(  r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
+                            if (!exp.hasMatch(value)) {
+                              setState(() {
+                                validEmail = false;
+                              });
+                            } else {
+                              setState(() {
+                                validEmail = true;
+                              });
+                            }
+                          },
+                          decoration: new InputDecoration(
+                              isDense: true,
+                              contentPadding: new EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 10.0),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors.black, width: 1.0),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors.black, width: 1.0),
+                              ),
+                              hintText: 'Email ',
+                              labelText: "Email"),
+                          validator: (val) {
+                            if (val == null || val.isEmpty) {
+                              return 'Please enter Email';
+                            } else if (!validEmail) {
+                              return 'Please enter valid E-Mail id';
+                            }
+                          },
+                        ),
+
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            bottom: 6.0, left: 60, right: 60, top: 10),
+                        child: TextFormField(
+                          onChanged: (value) {
+                            RegExp exp =
+                            RegExp(  r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
+                            if (!exp.hasMatch(value)) {
+                              setState(() {
+                                validEmail2 = false;
+                              });
+                            } else {
+                              setState(() {
+                                validEmail2 = true;
+                              });
+                            }
+                          },
+                          decoration: new InputDecoration(
+                              isDense: true,
+                              contentPadding: new EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 10.0),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors.black, width: 1.0),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors.black, width: 1.0),
+                              ),
+                              hintText: 'Email-2 ',
+                              labelText: "Email-2"),
+
+                        ),
+
+                      ),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              returnBack();
+                            },
+                            child: Text(
+                              "Back",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()){
+                                setState(() {
+
+                                });
+                              }
+
+                            },
+                            child: Text(
+                              "Save",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                )))));
+  }
+
 
   Future<bool> getAddress() async {
     bool addressPresent = false;
     await SharedPreferences.getInstance().then((value) => userId = value.getString("token")!);
-    String url = "http://192.168.1.9:3000/address?userId="+userId;
+    String url = "http://192.168.1.8:3000/address?userId="+userId;
     var response = await http.get(Uri.parse(url));
     var result = json.decode(response.body);
     if(result.toString().length > 2){
@@ -596,15 +801,15 @@ class MyProfileState extends State {
           ];
         }else{
           children = <Widget>[
-             addAddress()
+            addAddress()
           ];
 
         }
         return Column(
-          children: children
+            children: children
 
         );
-    },
+      },
 
     ));
   }
@@ -681,9 +886,9 @@ class MyProfileState extends State {
   }
 
   Future<http.Response> updateAddress() async {
-      String url = "http://192.168.1.9:3000/address";
-      print(talukValue);
-      var response = await http.put(Uri.parse(url),
+    String url = "http://192.168.1.8:3000/address";
+    print(talukValue);
+    var response = await http.put(Uri.parse(url),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -698,12 +903,12 @@ class MyProfileState extends State {
           "country": countryValue,
           "userId":userId
         })
-      );
-      print(response.body)
-     ; if(response.statusCode !=200){
-        throw Exception("Error Updating Address");
-      }
-      return response;
+    );
+    print(response.body)
+    ; if(response.statusCode !=200){
+      throw Exception("Error Updating Address");
+    }
+    return response;
   }
 
   returnBack(){
@@ -720,14 +925,14 @@ class MyProfileState extends State {
                 countryValue ="";
               });
 
-              },
+            },
             icon: Icon(Icons.delete)
         )
     );
   }
 
   Future<void> deleteAddress() async {
-    String url = "http://192.168.1.9:3000/address?addressId="+addressId;
+    String url = "http://192.168.1.8:3000/address?addressId="+addressId;
     final response = await http.delete(Uri.parse(url));
     if(response.statusCode != 200 ){
       throw Exception('Error while deleting Address');
@@ -736,7 +941,7 @@ class MyProfileState extends State {
   }
 
   Future<http.Response> createAddress() async {
-    String url = "http://192.168.1.9:3000/address";
+    String url = "http://192.168.1.8:3000/address";
     final response = await http.post(Uri.parse(url),headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
@@ -760,13 +965,13 @@ class MyProfileState extends State {
   }
 
   Future<void> updateUserPassword() async {
-    String url = "http://192.168.1.9:3000/users?userId="+userId;
+    String url = "http://192.168.1.8:3000/users?userId="+userId;
     final response = await http.put(Uri.parse(url),headers: <String, String>{
-    'Content-Type': 'application/json; charset=UTF-8',
+      'Content-Type': 'application/json; charset=UTF-8',
     },
-    body: jsonEncode(<String,String>{
-    "password": passwordController.text.toString(),
-    })
+        body: jsonEncode(<String,String>{
+          "password": passwordController.text.toString(),
+        })
     );
   }
 }
