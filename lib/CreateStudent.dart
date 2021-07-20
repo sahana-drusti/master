@@ -1,5 +1,7 @@
 import 'dart:convert';
-
+import 'dart:html';
+import 'dart:typed_data';
+import 'package:excel/excel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
@@ -14,6 +16,8 @@ class CreateStudent extends StatefulWidget {
 class CreateStudentState extends State<CreateStudent> {
   final _formKey = GlobalKey<FormState>();
   final _formKey1 = GlobalKey<FormState>();
+  late Uint8List uploadedImage;
+  TextEditingController fileChooseController = TextEditingController();
   TextEditingController regNumberCtrlr = TextEditingController();
   TextEditingController firstNameCtrlr = TextEditingController();
   TextEditingController middleNameCtrlr = TextEditingController();
@@ -1103,6 +1107,7 @@ class CreateStudentState extends State<CreateStudent> {
         "middleName": middleNameCtrlr.text.toString(),
         "dob": dateController.text.toString(),
         "gender": gender,
+        "registerNumber": regNumberCtrlr.text.toString(),
         "class": classNameCtrlr.text.toString(),
         "userId": localStorage.getString('token')!,
         "fatherName":fatherNameCtrlr.text.toString(),
@@ -1150,21 +1155,14 @@ class CreateStudentState extends State<CreateStudent> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.all(15.0),
-              child: Text(
-                'Choose files to Upload',
-                style: TextStyle(color: Colors.red),
-              ),
-            ),
-            Padding(
               padding: EdgeInsets.only(
                   top: 10.0, bottom: 10.0, left: 60, right: 60),
               child: TextFormField(
-                controller: addressLine2Controller,
+                enabled: false,
+                controller: fileChooseController,
                 decoration: new InputDecoration(
                   isDense: true,
-                  contentPadding: new EdgeInsets.symmetric(
-                      vertical: 10.0, horizontal: 10.0),
+                  contentPadding: new EdgeInsets.only(),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(32.0)),
                   focusedBorder: OutlineInputBorder(
@@ -1183,10 +1181,15 @@ class CreateStudentState extends State<CreateStudent> {
                     return 'Please select a file';
                   }
                 },
+
               ),
+
             ),
             ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  startFilePicker();
+
+                },
                 child: Text(
                   'Browse!',
                   style: TextStyle(
@@ -1194,6 +1197,7 @@ class CreateStudentState extends State<CreateStudent> {
                 )),
             ElevatedButton(
                 onPressed: () {
+                  convertAndLoadToDB();
                   Navigator.of(context).pop();
                 },
                 child: Text(
@@ -1210,5 +1214,76 @@ class CreateStudentState extends State<CreateStudent> {
         builder: (BuildContext context) => errorDialog);
     return errorDialog;
   }
+
+  startFilePicker() async {
+    FileUploadInputElement uploadInput = FileUploadInputElement();
+    uploadInput.click();
+
+    uploadInput.onChange.listen((e) {
+      final files = uploadInput.files;
+      if (files!.length == 1) {
+        final file = files[0];
+        FileReader reader =  FileReader();
+
+        reader.onLoadEnd.listen((e) {
+          setState(() {
+            //print(reader.result as Uint8List);
+            fileChooseController.value = TextEditingValue(text: file.name);
+            uploadedImage = reader.result as Uint8List;
+          });
+        });
+
+
+        reader.onError.listen((fileEvent) {
+          setState(() {
+            var option1Text = "Some Error occured while reading the file";
+          });
+        });
+
+        reader.readAsArrayBuffer(file);
+      }
+    });
+  }
+
+  void convertAndLoadToDB() {
+    //uploadedImage
+    var excel = Excel.decodeBytes(uploadedImage);
+    for(var table in excel.tables.keys){
+      print(table);
+      int count = 0;
+      List<dynamic> keys = [];
+      var jsonMap = [];
+      for(var row in excel.tables[table]!.rows){
+         if(count == 0){
+           keys = row;
+           count++;
+         }
+         else {
+           var temp = {};
+           int j = 0;
+           String tk = '';
+           for (var key in keys) {
+             tk = '\"${key.toString()}\"';
+             temp[tk] = (row[j].runtimeType == String)
+                 ?  '\"${row[j].toString()}\"'
+                 : row[j];
+             j++;
+           }
+
+           jsonMap.add(temp);
+         }
+
+    String fullJson =
+    jsonMap.toString().substring(1, jsonMap.toString().length - 1);
+         print(fullJson);
+         loadToDB(fullJson);
+      }
+    }
+  }
+
+  void loadToDB(String fullJson) {
+
+  }
+
 
 }
