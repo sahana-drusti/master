@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'dart:html';
 import 'dart:typed_data';
 import 'package:excel/excel.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
@@ -1216,33 +1216,23 @@ class CreateStudentState extends State<CreateStudent> {
   }
 
   startFilePicker() async {
-    FileUploadInputElement uploadInput = FileUploadInputElement();
-    uploadInput.click();
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['xlsx'],
+    );
+    if(result != null) {
+      PlatformFile file = result.files.first;
 
-    uploadInput.onChange.listen((e) {
-      final files = uploadInput.files;
-      if (files!.length == 1) {
-        final file = files[0];
-        FileReader reader =  FileReader();
+      print(file.name);
+      print(file.bytes);
+      print(file.size);
+      print(file.extension);
+      print(file.path);
+      uploadedImage = file.bytes!;
+    } else {
+      // User canceled the picker
+    }
 
-        reader.onLoadEnd.listen((e) {
-          setState(() {
-            //print(reader.result as Uint8List);
-            fileChooseController.value = TextEditingValue(text: file.name);
-            uploadedImage = reader.result as Uint8List;
-          });
-        });
-
-
-        reader.onError.listen((fileEvent) {
-          setState(() {
-            var option1Text = "Some Error occured while reading the file";
-          });
-        });
-
-        reader.readAsArrayBuffer(file);
-      }
-    });
   }
 
   void convertAndLoadToDB() {
