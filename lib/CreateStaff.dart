@@ -1,5 +1,8 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
+import 'package:excel/excel.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
@@ -12,8 +15,16 @@ class CreateStaff extends StatefulWidget {
 }
 
 class CreateStaffState extends State<CreateStaff> {
+  @override
+  void initState(){
+    super.initState();
+    getUserId();
+  }
   final _formKey = GlobalKey<FormState>();
   final _formKey1 = GlobalKey<FormState>();
+  var userId;
+  late Uint8List uploadedImage;
+  TextEditingController fileChooseController = TextEditingController();
   TextEditingController regNumberCtrlr = TextEditingController();
   TextEditingController firstNameCtrlr = TextEditingController();
   TextEditingController middleNameCtrlr = TextEditingController();
@@ -905,6 +916,7 @@ class CreateStaffState extends State<CreateStaff> {
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, String>{
+        "registerNumber": regNumberCtrlr.text.toString(),
         "firstName": firstNameCtrlr.text.toString(),
         "lastName": lastNameCtrlr.text.toString(),
         "middleName": middleNameCtrlr.text.toString(),
@@ -962,7 +974,7 @@ class CreateStaffState extends State<CreateStaff> {
               padding: EdgeInsets.only(
                   top: 10.0, bottom: 10.0, left: 60, right: 60),
               child: TextFormField(
-                controller: addressLine2Controller,
+                controller: fileChooseController,
                 decoration: new InputDecoration(
                   isDense: true,
                   contentPadding: new EdgeInsets.symmetric(
@@ -980,6 +992,7 @@ class CreateStaffState extends State<CreateStaff> {
                   hintText: 'Choose file to Upload',
                   labelText: 'Choose file to Upload',
                 ),
+
                 validator: (val) {
                   if (val == null || val.isEmpty) {
                     return 'Please select a file';
@@ -988,7 +1001,9 @@ class CreateStaffState extends State<CreateStaff> {
               ),
             ),
             ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  startFilePicker();
+                },
                 child: Text(
                   'Browse!',
                   style: TextStyle(
@@ -996,6 +1011,7 @@ class CreateStaffState extends State<CreateStaff> {
                 )),
             ElevatedButton(
                 onPressed: () {
+                  convertAndLoadToDB();
                   Navigator.of(context).pop();
                 },
                 child: Text(
@@ -1011,6 +1027,126 @@ class CreateStaffState extends State<CreateStaff> {
         context: context,
         builder: (BuildContext context) => errorDialog);
     return errorDialog;
+  }
+  Future<void> getUserId() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    userId = localStorage.getString('token')!;
+  }
+
+  startFilePicker() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['xlsx'],
+    );
+    if(result != null) {
+      PlatformFile file = result.files.first;
+      fileChooseController.value = TextEditingValue(text:file.name);
+
+      uploadedImage = file.bytes!;
+    } else {
+      // User canceled the picker
+    }
+
+  }
+
+  void convertAndLoadToDB() {
+    //uploadedImage
+    var staffJSON = [];
+    var addressJSON = [];
+    var excel = Excel.decodeBytes(uploadedImage);
+    for(var table in excel.tables.keys){
+      //print(table);
+      int count = 0;
+      List<dynamic> keys = [];
+      var jsonMap = [];
+      for(var row in excel.tables[table]!.rows){
+        if(count == 0){
+          keys = row;
+          count++;
+        }
+        else {
+          var temp = {};
+          var staffTemp = {};
+          var phone1;
+          var addressTemp = {};
+          int j = 0;
+          String tk = '';
+          for (var key in keys) {
+            tk = '\"${key.toString()}\"';
+            tk = tk.replaceAll('"', ' ').trim();
+            if(j<9){
+              temp[tk] = (row[j].runtimeType == String)
+                  ?  '\"${row[j].toString()}\"'.replaceAll('"','').trim()
+                  : row[j];
+
+            }
+            if(j==9){
+              staffTemp = {};
+              staffTemp = temp;
+              phone1 = staffTemp['phone1'];
+              staffTemp.putIfAbsent("userId", () => userId);
+              temp = {};
+              staffJSON.add(staffTemp);
+            }
+            if(j>=9){
+              temp[tk] = (row[j].runtimeType == String)
+                  ?  '\"${row[j].toString()}\"'.replaceAll('"','').trim()
+                  : row[j];
+            }
+
+            j++;
+          }
+          addressTemp = temp;
+          addressTemp.putIfAbsent("phone1", () => phone1);
+          addressJSON.add(addressTemp);
+
+          addressTemp = {};
+          phone1 = "";
+          //jsonMap.add(temp);
+        }
+
+
+      }
+    }
+    loadToDB(staffJSON, addressJSON);
+
+  }
+
+
+
+
+
+  void loadToDB(List staffJSON,  List addressJSON) {
+    loadStaffDataToDB(staffJSON);
+    loadAddressData(addressJSON);
+  }
+  Future<void> loadStaffDataToDB(List staffJSON) async {
+    String url = "http://localhost:3000/faculties/";
+    var body = json.encode({
+      "faculties": staffJSON
+    });
+
+    final response = await http.post(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: body);
+  }
+
+
+  Future<void> loadAddressData(List addressJSON) async {
+    String url = "http://localhost:3000/faddresses/";
+    var body = json.encode({
+      "addresses": addressJSON
+    });
+
+    final response = await http.post(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: body);
   }
 
 }
