@@ -14,8 +14,15 @@ class CreateStudent extends StatefulWidget {
 }
 
 class CreateStudentState extends State<CreateStudent> {
+
+  @override
+  void initState(){
+    super.initState();
+    getUserId();
+  }
   final _formKey = GlobalKey<FormState>();
   final _formKey1 = GlobalKey<FormState>();
+  var userId;
   late Uint8List uploadedImage;
   TextEditingController fileChooseController = TextEditingController();
   TextEditingController regNumberCtrlr = TextEditingController();
@@ -1222,12 +1229,8 @@ class CreateStudentState extends State<CreateStudent> {
     );
     if(result != null) {
       PlatformFile file = result.files.first;
+      fileChooseController.value = TextEditingValue(text:file.name);
 
-      print(file.name);
-      print(file.bytes);
-      print(file.size);
-      print(file.extension);
-      print(file.path);
       uploadedImage = file.bytes!;
     } else {
       // User canceled the picker
@@ -1237,43 +1240,140 @@ class CreateStudentState extends State<CreateStudent> {
 
   void convertAndLoadToDB() {
     //uploadedImage
+    var studentJSON = [];
+    var parentJSON = [];
+    var addressJSON = [];
     var excel = Excel.decodeBytes(uploadedImage);
     for(var table in excel.tables.keys){
-      print(table);
+      //print(table);
       int count = 0;
       List<dynamic> keys = [];
       var jsonMap = [];
       for(var row in excel.tables[table]!.rows){
-         if(count == 0){
-           keys = row;
-           count++;
-         }
-         else {
-           var temp = {};
-           int j = 0;
-           String tk = '';
-           for (var key in keys) {
-             tk = '\"${key.toString()}\"';
-             temp[tk] = (row[j].runtimeType == String)
-                 ?  '\"${row[j].toString()}\"'
-                 : row[j];
-             j++;
-           }
+        if(count == 0){
+          keys = row;
+          count++;
+        }
+        else {
+          var temp = {};
+          var studentTemp = {};
+          var phone1;
+          var addressTemp = {};
+          int j = 0;
+          String tk = '';
+          for (var key in keys) {
+            tk = '\"${key.toString()}\"';
+            tk = tk.replaceAll('"', ' ').trim();
+            if(j<7){
+              temp[tk] = (row[j].runtimeType == String)
+                  ?  '\"${row[j].toString()}\"'.replaceAll('"','').trim()
+                  : row[j];
 
-           jsonMap.add(temp);
-         }
+            }
+            if(j==7){
+              studentTemp = {};
+              studentTemp = temp;
+              studentTemp.putIfAbsent("userId", () => userId);
+              temp = {};
+            }
+            if(j>=7 && j<7+9){
+              if(tk == '\"phone1\"'){
+                phone1 = row[j].toString();
+                addphone1ToJSON(studentTemp, phone1);
+              }
+              temp[tk] = (row[j].runtimeType == String)
+                  ?  '\"${row[j].toString()}\"'.replaceAll('"','').trim()
+                  : row[j];
+            }
+            if(j==7+9){
+              parentJSON.add(temp);
+              studentJSON.add(studentTemp);
+              temp = {};
+            }
+            if(j>=7+9){
+              temp[tk] = (row[j].runtimeType == String)
+                  ?  '\"${row[j].toString()}\"'.replaceAll('"','').trim()
+                  : row[j];
 
-    String fullJson =
-    jsonMap.toString().substring(1, jsonMap.toString().length - 1);
-         print(fullJson);
-         loadToDB(fullJson);
+            }
+
+            j++;
+          }
+          addressTemp = temp;
+          addressTemp.putIfAbsent("phone1", () => phone1);
+          addressJSON.add(addressTemp);
+          addressTemp = {};
+          phone1 = "";
+          //jsonMap.add(temp);
+        }
+
+
       }
     }
+
+    loadToDB(studentJSON, parentJSON, addressJSON);
+
   }
 
-  void loadToDB(String fullJson) {
 
+
+
+
+  void loadToDB(List studentJSON, List parentJSON, List addressJSON) {
+    loadParentDataToDB(parentJSON);
+    loadStudentData(studentJSON);
+    loadAddressData(addressJSON);
+  }
+  Future<void> loadParentDataToDB(List parentJSON) async {
+    String url = "http://localhost:3000/parents/";
+    var body = json.encode({
+      "parents": parentJSON
+    });
+
+    final response = await http.post(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: body);
   }
 
 
+  Future<void> loadStudentData(List studentJSON) async {
+    String url = "http://localhost:3000/students/";
+    var body = json.encode({
+      "students": studentJSON
+    });
+
+    final response = await http.post(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: body);
+  }
+
+
+  Future<void> loadAddressData(List addressJSON) async {
+    String url = "http://localhost:3000/addresses/";
+    var body = json.encode({
+      "addresses": addressJSON
+    });
+
+    final response = await http.post(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: body);
+  }
+
+  void addphone1ToJSON(Map studentTemp, phone1) {
+    studentTemp.putIfAbsent("phone1", () => phone1);
+  }
+
+  Future<void> getUserId() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    userId = localStorage.getString('token')!;
+  }
 }
