@@ -42,6 +42,7 @@ class MyProfileState extends State {
   TextEditingController addressLine2Controller = TextEditingController();
   TextEditingController zipCodeController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController contactController=TextEditingController();
 
 
   @override
@@ -179,7 +180,9 @@ class MyProfileState extends State {
   }
 
   editIcon() {
-    return (IconButton(onPressed: () {showDialogBox(createAddressForm(false));}, icon: Icon(Icons.edit)));
+    return (IconButton(
+        onPressed: () {
+          showDialogBox(createAddressForm(false));}, icon: Icon(Icons.edit)));
 
   }
 
@@ -619,7 +622,7 @@ class MyProfileState extends State {
                                 ),
                                 hintText: 'Phone Number ',
                                 labelText: "Phone Number"),
-
+                            controller: contactController,
                             validator: (val) {
                               if (val == null || val.isEmpty) {
                                 return 'Please enter Phone number';
@@ -756,7 +759,7 @@ class MyProfileState extends State {
                             onPressed: () {
                               if (_formKey.currentState!.validate()){
                                 setState(() {
-
+                                  final response = updateUserContact().then((value) => returnBack());
                                 });
                               }
 
@@ -886,7 +889,7 @@ class MyProfileState extends State {
   }
 
   Future<http.Response> updateAddress() async {
-    String url = "http://192.168.1.8:3000/address";
+    String url = "http://10.0.2.2:3000/address";
     print(talukValue);
     var response = await http.put(Uri.parse(url),
         headers: <String, String>{
@@ -932,7 +935,7 @@ class MyProfileState extends State {
   }
 
   Future<void> deleteAddress() async {
-    String url = "http://192.168.1.8:3000/address?addressId="+addressId;
+    String url = "http://10.0.2.2:3000/address?addressId="+addressId;
     final response = await http.delete(Uri.parse(url));
     if(response.statusCode != 200 ){
       throw Exception('Error while deleting Address');
@@ -941,7 +944,7 @@ class MyProfileState extends State {
   }
 
   Future<http.Response> createAddress() async {
-    String url = "http://192.168.1.8:3000/address";
+    String url = "http://10.0.2.2:3000/address";
     final response = await http.post(Uri.parse(url),headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
@@ -965,13 +968,25 @@ class MyProfileState extends State {
   }
 
   Future<void> updateUserPassword() async {
-    String url = "http://192.168.1.8:3000/users?userId="+userId;
+    String url = "http://10.0.2.2:3000/users?userId="+userId;
     final response = await http.put(Uri.parse(url),headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
         body: jsonEncode(<String,String>{
           "password": passwordController.text.toString(),
         })
+    );
+  }
+  Future<void>updateUserContact()async{
+    String url="http://10.0.2.2:3000/users?userId="+userId;
+    final response=await http.put(Uri.parse(url),headers: <String,String>{
+      'Content-Type':'application/json;charset=UTF-8',
+
+    },
+     body: jsonEncode(<String,String>{
+       "Contact":contactController.text.toString(),
+     }
+     )
     );
   }
 }
