@@ -34,6 +34,9 @@ dependencies:
   table_calendar: ^3.0.1
   excel: ^1.1.5
   file_picker: ^3.0.3
+  syncfusion_flutter_calendar: ^19.2.49
+
+
 
 
 dev_dependencies:
