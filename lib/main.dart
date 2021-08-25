@@ -1,6 +1,6 @@
 // @dart=2.9
 import 'package:drusti/BottomNavigation.dart';
-import 'package:drusti/HomePage.dart';
+import 'package:drusti/VehicleLoginAndRegistration.dart';
 import 'package:flutter/material.dart';
 import 'package:drusti/LoginAndRegistration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -72,20 +72,7 @@ class LandingPageState extends State<LandingPage> {
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
+
           mainAxisAlignment: MainAxisAlignment.center,
 
           children: <Widget>[
@@ -143,7 +130,17 @@ class LandingPageState extends State<LandingPage> {
                       primary: Colors.white,
                       textStyle: const TextStyle(fontSize: 20),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push<void>(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (BuildContext context) =>
+                              VehicleLoginAndRegisteration(
+                                type: 'Vehicle',
+                              ),
+                        ),
+                      );
+                    },
                     child: const Text('Vechicle'),
                   ),
                 ],
